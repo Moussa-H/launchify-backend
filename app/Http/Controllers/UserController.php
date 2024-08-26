@@ -68,6 +68,22 @@ public function update(Request $request, $id)
     // Return the updated user as a JSON response
     return response()->json($user);
 }
+public function destroy($id)
+{
+    // Find the user by ID
+    $user = User::find($id);
+
+    // If user not found, return a 404 response
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    // Delete the user
+    $user->delete();
+
+    // Return a 204 response indicating the deletion was successful
+    return response()->json(null, 204);
+}
 
 
 }
