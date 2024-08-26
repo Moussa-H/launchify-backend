@@ -38,6 +38,36 @@ class UserController extends Controller
     return response()->json($user, 201);
 }
 
+public function update(Request $request, $id)
+{
+    // Find the user by ID
+    $user = User::find($id);
+
+    // If user not found, return a 404 response
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    // Validate the request data
+    $request->validate([
+        'username' => 'sometimes|required|max:255|unique:users,username,' . $id,
+        'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id,
+        'password' => 'sometimes|required|min:6',
+        'role' => 'sometimes|required|in:startup,investor,mentor',
+    ]);
+
+    // Update user fields
+    $user->username = $request->input('username', $user->username);
+    $user->email = $request->input('email', $user->email);
+    if ($request->has('password')) {
+        $user->password = bcrypt($request->input('password')); // Encrypt the password
+    }
+    $user->role = $request->input('role', $user->role);
+    $user->save();
+
+    // Return the updated user as a JSON response
+    return response()->json($user);
+}
 
 
 }
