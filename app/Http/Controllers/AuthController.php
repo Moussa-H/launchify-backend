@@ -59,7 +59,7 @@ $token = JWTAuth::attempt($credentials);
             'username' => 'required|string|alpha_dash|unique:users|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:startup,investor,mentor',
+            'role' => 'required|in:Startup,Investor,Mentor',
         ]);
 
         $user = User::create([

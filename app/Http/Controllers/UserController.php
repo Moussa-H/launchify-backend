@@ -23,7 +23,7 @@ class UserController extends Controller
         'username' => 'required|unique:users|max:255',
         'email' => 'required|unique:users|email|max:255',
         'password' => 'required|min:6',
-        'role' => 'required|in:startup,investor,mentor',
+        'role' => 'required|in:Startup,Investor,Mentor',
     ]);
 
     // Create a new user
@@ -53,7 +53,7 @@ public function update(Request $request, $id)
         'username' => 'sometimes|required|max:255|unique:users,username,' . $id,
         'email' => 'sometimes|required|email|max:255|unique:users,email,' . $id,
         'password' => 'sometimes|required|min:6',
-        'role' => 'sometimes|required|in:startup,investor,mentor',
+        'role' => 'sometimes|required|in:Startup,Investor,Mentor',
     ]);
 
     // Update user fields
