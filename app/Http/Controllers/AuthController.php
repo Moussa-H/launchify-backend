@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 
 class AuthController extends Controller
@@ -53,34 +55,41 @@ $token = JWTAuth::attempt($credentials);
 
 
 
-    public function register(Request $request)
-    {
-        $request->validate([
-            'username' => 'required|string|alpha_dash|unique:users|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-            'role' => 'required|in:Startup,Investor,Mentor',
-        ]);
+   public function register(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'username' => 'required|string|alpha_dash|unique:users|max:255',
+        'email' => 'required|string|email|max:255|unique:users',
+        'password' => 'required|string|min:6',
+        'role' => 'required|in:Startup,Investor,Mentor',
+    ]);
 
-        $user = User::create([
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-        ]);
- $token = Auth::login($user);
-       
-       
+    if ($validator->fails()) {
         return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+            'message' => 'Validation Error',
+            'errors' => $validator->errors()
+        ], 422);
     }
+
+    $user = User::create([
+        'username' => $request->username,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => $request->role,
+    ]);
+
+    $token = Auth::login($user);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'User created successfully',
+        'user' => $user,
+        'authorisation' => [
+            'token' => $token,
+            'type' => 'bearer',
+        ]
+    ]);
+}
 
     public function logout()
     {
