@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
  public function index()
@@ -84,6 +84,31 @@ public function destroy($id)
     // Return a 204 response indicating the deletion was successful
     return response()->json(null, 204);
 }
+  public function getRole(Request $request)
+    {
+        // Validate the token
+        $token = $request->bearerToken();
 
+        if (!$token || !Auth::guard('api')->setToken($token)->check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
+        // Validate the request data
+        $request->validate([
+            'username' => 'required|string|max:255'
+        ]);
+
+        $username = $request->input('username');
+
+        // Find the user by username
+        $user = User::where('username', $username)->first();
+
+        // If user not found, return a 404 response
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Return the role of the user
+        return response()->json(['role' => $user->role]);
+    }
 }
