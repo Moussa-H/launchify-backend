@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SectorController;
+use App\Http\Controllers\StartupController;
+use App\Http\Controllers\StartupSectorController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,6 +27,18 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
+
+Route::get('/startups/{startupId}/sectors', [StartupSectorController::class, 'getSectors']);
+Route::post('/startups/{startupId}/sectors', [StartupSectorController::class, 'addSectors']);
+Route::put('/startups/{startupId}/sectors', [StartupSectorController::class, 'updateSectors']);
+Route::delete('/startups/{startupId}/sectors/{sectorId}', [StartupSectorController::class, 'removeSector']);
+
+
+
+Route::get('/sectors', [SectorController::class, 'getAllSectors']);
+Route::apiResource('startups', StartupController::class);
+Route::apiResource('startup-sectors', StartupSectorController::class);
+Route::put('/startups/{id}', [StartupController::class, 'update']);
 Route::middleware('auth:api')->get('/getRole', [UserController::class, 'getRole']);
 Route::get('/users', [UserController::class, 'index']);
 

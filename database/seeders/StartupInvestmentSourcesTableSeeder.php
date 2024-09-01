@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\StartupInvestmentSource;
+use App\Models\Startup;
+
 class StartupInvestmentSourcesTableSeeder extends Seeder
 {
     /**
@@ -12,14 +13,13 @@ class StartupInvestmentSourcesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        StartupInvestmentSource::create([
-            'startup_id' => 1,
-            'investment_source' => 'Business Angel'
-        ]);
+        // Ensure that a startup with ID 21 exists
+         Startup::firstOrCreate(['id' => 2]);
 
+        // Now create the investment source entry
         StartupInvestmentSource::create([
-            'startup_id' => 1,
-            'investment_source' => 'VC Fund'
+            'startup_id' => 2,
+            'investment_source' => 'Business Angel'
         ]);
     }
 }

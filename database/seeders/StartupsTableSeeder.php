@@ -13,7 +13,7 @@ class StartupsTableSeeder extends Seeder
     public function run(): void
     {
         Startup::factory()->create([
-            'user_id' => 1,
+            'user_id' => 2,
             'company_name' => 'Startup Inc.',
             'description' => 'A leading innovator in AI and Blockchain technology, revolutionizing the industry.',
             'founder' => 'John Doe',

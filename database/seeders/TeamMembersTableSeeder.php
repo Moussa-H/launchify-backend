@@ -13,14 +13,14 @@ class TeamMembersTableSeeder extends Seeder
     public function run(): void
    {
         TeamMember::create([
-            'startup_id' => 1,
+            'startup_id' => 2,
             'fullname' => 'Jane Smith',
             'job_title' => 'CTO',
             'salary' => 120000
         ]);
 
         TeamMember::create([
-            'startup_id' => 1,
+            'startup_id' => 2,
             'fullname' => 'Alice Johnson',
             'job_title' => 'Lead Developer',
             'salary' => 100000

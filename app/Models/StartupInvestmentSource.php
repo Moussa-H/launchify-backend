@@ -9,7 +9,7 @@ class StartupInvestmentSource extends Model
 {
     use HasFactory;
 
-
+  public $timestamps = false;
       protected $fillable = ['startup_id', 'investment_source'];
 
     public function startup()

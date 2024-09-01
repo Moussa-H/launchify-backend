@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('startup_id')->constrained('startups')->onDelete('cascade');
             $table->enum('investment_source', ['Business Angel', 'Public grant', 'Accelerator', 'Corporate', 'VC Fund', 'Crowd']);
+            $table->timestamps();
         });
     }
 
