@@ -27,16 +27,18 @@ Route::controller(AuthController::class)->group(function () {
 
 });
 
-
+//startup sectors
 Route::get('/startups/{startupId}/sectors', [StartupSectorController::class, 'getSectors']);
 Route::post('/startups/{startupId}/sectors', [StartupSectorController::class, 'addSectors']);
 Route::put('/startups/{startupId}/sectors', [StartupSectorController::class, 'updateSectors']);
 Route::delete('/startups/{startupId}/sectors/{sectorId}', [StartupSectorController::class, 'removeSector']);
 
-
+//startups api
+Route::apiResource('startups', StartupController::class);
+Route::get('startups/{id}', [StartupController::class, 'show']);
 
 Route::get('/sectors', [SectorController::class, 'getAllSectors']);
-Route::apiResource('startups', StartupController::class);
+
 Route::apiResource('startup-sectors', StartupSectorController::class);
 Route::put('/startups/{id}', [StartupController::class, 'update']);
 Route::middleware('auth:api')->get('/getRole', [UserController::class, 'getRole']);

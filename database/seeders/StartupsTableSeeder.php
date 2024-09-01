@@ -14,6 +14,7 @@ class StartupsTableSeeder extends Seeder
     {
         Startup::factory()->create([
             'user_id' => 2,
+            'image' => $this->faker->imageUrl(640, 480, 'business', true, 'Company Logo'),
             'company_name' => 'Startup Inc.',
             'description' => 'A leading innovator in AI and Blockchain technology, revolutionizing the industry.',
             'founder' => 'John Doe',

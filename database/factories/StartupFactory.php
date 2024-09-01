@@ -24,6 +24,7 @@ class StartupFactory extends Factory
        return [
             'user_id' => \App\Models\User::factory(),
             'company_name' => $this->faker->company,
+            'image' => $this->faker->imageUrl(640, 480, 'business', true, 'Faker'),
             'description' => $this->faker->paragraph,
             'founder' => $this->faker->name,
             'industry' => $this->faker->word,

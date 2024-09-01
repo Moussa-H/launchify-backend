@@ -14,7 +14,7 @@ return new class extends Migration
          Schema::create('startups', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-             $table->string('image')->nullable();
+            $table->string('image')->nullable();
             $table->string('company_name');
             $table->text('description');
             $table->string('founder');
