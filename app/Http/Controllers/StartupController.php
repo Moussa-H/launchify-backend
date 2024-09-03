@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use App\Models\Startup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class StartupController extends Controller
 {
@@ -12,7 +13,7 @@ class StartupController extends Controller
         return Startup::all();
     }
 
-  public function show($id)
+    public function show($id)
     {
         $startup = Startup::find($id);
 
@@ -25,8 +26,9 @@ class StartupController extends Controller
 
     public function store(Request $request)
     {
+        $user = $request->attributes->get('user'); // Get the authenticated user
+
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
             'image' => 'nullable|string',
             'company_name' => 'required|string|max:255',
             'description' => 'required|string',
@@ -47,14 +49,18 @@ class StartupController extends Controller
             'currently_raising_size' => 'nullable|numeric',
         ]);
 
+        // Include the user_id from the authenticated user
+        $validated['user_id'] = $user->id;
+
         return Startup::create($validated);
     }
 
-     public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
+        $user = $request->attributes->get('user'); // Get the authenticated user
         $startup = Startup::findOrFail($id);
+
         $validated = $request->validate([
-            'user_id' => 'sometimes|exists:users,id',
             'image' => 'nullable|string',
             'company_name' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
@@ -75,16 +81,64 @@ class StartupController extends Controller
             'currently_raising_size' => 'nullable|numeric',
         ]);
 
+        // You can add additional logic to ensure that the user is authorized to update this resource
+
         $startup->update($validated);
 
         return response()->json($startup, 200);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $user = $request->attributes->get('user'); // Get the authenticated user
         $startup = Startup::findOrFail($id);
         $startup->delete();
 
         return response()->json(['message' => 'Startup deleted successfully']);
     }
+
+
+public function getstartup(Request $request)
+{
+    // Check if the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    // Get the authenticated user ID
+    $user_id = Auth::id();
+
+    // Validate the user_id parameter (optional, but useful for consistency)
+    $validator = Validator::make(['user_id' => $user_id], [
+        'user_id' => 'required|numeric|exists:users,id',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Invalid user ID',
+            'errors' => $validator->errors(),
+        ], 400);
+    }
+
+    // Fetch startups associated with the user ID
+    $startups = Startup::where('user_id', $user_id)->get();
+
+    if ($startups->isEmpty()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No startups found for this user',
+        ], 404);
+    }
+
+    // Return the entire startup data
+    return response()->json([
+        'status' => 'success',
+        'startup' => $startups,
+    ], 200);
+}
+
 }

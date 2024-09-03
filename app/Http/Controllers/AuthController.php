@@ -1,13 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Request;
 
 
 class AuthController extends Controller
@@ -17,82 +13,78 @@ class AuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
- public function login(Request $request)
-{
-    $request->validate([
-        'username' => 'required|string',
-        'password' => 'required|string',
-    ]);
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string',
+        ]);
 
-    $credentials = $request->only('username', 'password');
-    $credentials['username'] = filter_var($credentials['username'], FILTER_VALIDATE_INT) === false ? $credentials['username'] : null;
+        $credentials = $request->only('username', 'password');
+        $credentials['username'] = filter_var($credentials['username'], FILTER_VALIDATE_INT) === false ? $credentials['username'] : null;
 
-    if ($credentials['username'] === null) {
+        if ($credentials['username'] === null) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Username should not be a number.',
+            ], 422);
+        }
+
+        // Attempt to generate a token using JWTAuth
+        $token = Auth::attempt($credentials);
+        if (!$token) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        // Get the authenticated user using Auth
+        $user = Auth::user();
+
         return response()->json([
-            'status' => 'error',
-            'message' => 'Username should not be a number.',
-        ], 422);
-    }
-$token = JWTAuth::attempt($credentials);
-    if (!$token) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Unauthorized',
-        ], 401);
-    }
-
-    $user = Auth::user();
-
-    return response()->json([
-        'status' => 'success',
-        'user' => $user,
-        'authorisation' => [
-            'token' => $token,  // Return the actual token here
-            'type' => 'bearer',
-        ]
-    ]);
-}
-
-
-
-   public function register(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'username' => 'required|string|alpha_dash|unique:users|max:255',
-        'email' => 'required|string|email|max:255|unique:users',
-        'password' => 'required|string|min:6',
-        'role' => 'required|in:Startup,Investor,Mentor',
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'message' => 'Validation Error',
-            'errors' => $validator->errors()
-        ], 422);
+            'status' => 'success',
+            'user' => $user,
+            'authorisation' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ]
+        ]);
     }
 
-    $user = User::create([
-        'username' => $request->username,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => $request->role,
-    ]);
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'username' => 'required|string|alpha_dash|unique:users|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:6',
+            'role' => 'required|in:Startup,Investor,Mentor',
+        ]);
 
-    $token = Auth::login($user);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation Error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
-    return response()->json([
-        'status' => 'success',
-        'message' => 'User created successfully',
-        'user' => $user,
-        'authorisation' => [
-            'token' => $token,
-            'type' => 'bearer',
-        ]
-    ]);
-}
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully',
+            'user' => $user,
+        ]);
+    }
 
     public function logout()
     {
+        // Logout using Auth facade
         Auth::logout();
 
         return response()->json([
@@ -107,7 +99,7 @@ $token = JWTAuth::attempt($credentials);
             'status' => 'success',
             'user' => Auth::user(),
             'authorisation' => [
-                'token' => Auth::refresh(),
+                'token' => JWTAuth::refresh(), // Refresh the JWT token
                 'type' => 'bearer',
             ]
         ]);

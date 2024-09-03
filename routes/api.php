@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\StartupController;
 use App\Http\Controllers\StartupSectorController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,33 +19,66 @@ use App\Http\Controllers\StartupSectorController;
 |
 */
 
-
+// Authentication routes
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
     Route::post('logout', 'logout');
     Route::post('refresh', 'refresh');
-
 });
 
-//startup sectors
-Route::get('/startups/{startupId}/sectors', [StartupSectorController::class, 'getSectors']);
-Route::post('/startups/{startupId}/sectors', [StartupSectorController::class, 'addSectors']);
-Route::put('/startups/{startupId}/sectors', [StartupSectorController::class, 'updateSectors']);
-Route::delete('/startups/{startupId}/sectors/{sectorId}', [StartupSectorController::class, 'removeSector']);
+// Startup sectors routes
+Route::prefix('startups/{startupId}/sectors')->group(function () {
+    Route::get('/', [StartupSectorController::class, 'getSectors']);
+    Route::post('/', [StartupSectorController::class, 'addSectors']);
+    Route::put('/', [StartupSectorController::class, 'updateSectors']);
+    Route::delete('/{sectorId}', [StartupSectorController::class, 'removeSector']);
+});
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => SectorController::class
+], function () {
+    Route::get('/sectors/startup/{startupId}', 'getSectorsByStartup');
+});
 
-//startups api
-Route::apiResource('startups', StartupController::class);
-Route::get('startups/{id}', [StartupController::class, 'show']);
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => StartupController::class
+], function () {
+    Route::get('/startups/user', 'getstartup');
+});
 
+
+  // Route::get('/', 'index');
+    // Route::get('/{id}',  'readMessage');
+    // Route::post('/', 'store');
+    // Route::delete('/{id}',  'destroy');
+    // Route::put('/{id}',  'update');
+    // Route::get('startups/user', 'getByUser');
+// Test route to check authenticated user
+
+// Route::middleware('auth.token')->group(function () {
+//     Route::get('/startups', [StartupController::class, 'index']);
+//     Route::get('/startups', [StartupController::class, 'show']);
+//     Route::post('/startups', [StartupController::class, 'store']);
+//     Route::put('/startups/{id}', [StartupController::class, 'update']);
+//     Route::delete('/startups/{id}', [StartupController::class, 'destroy']);
+//      Route::get('/startups/user', [StartupController::class, 'getByUser']);
+// });
+
+// Sectors route (no authentication required)
 Route::get('/sectors', [SectorController::class, 'getAllSectors']);
 
-Route::apiResource('startup-sectors', StartupSectorController::class);
-Route::put('/startups/{id}', [StartupController::class, 'update']);
-Route::middleware('auth:api')->get('/getRole', [UserController::class, 'getRole']);
-Route::get('/users', [UserController::class, 'index']);
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// User routes with authentication
+Route::middleware('auth:api')->group(function () {
+    Route::get('/getRole', [UserController::class, 'getRole']);
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
 
+// Startup sector API resource routes (with authentication)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('startup-sectors', StartupSectorController::class);
+});
