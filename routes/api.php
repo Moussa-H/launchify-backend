@@ -61,7 +61,7 @@ Route::group([
 ], function () {
     Route::get('sectors/{startupId}', 'getSectors');  // GET sectors for a startup
     Route::post('sectors/{startupId}', 'addSectors'); // Add sectors to a startup
-  
+   Route::put('sectors/{startupId}', 'updateSectors');
 });
 
 Route::group([
@@ -71,7 +71,7 @@ Route::group([
     Route::get('investment-sources/{startupId}', 'getInvestmentSources');
     Route::post('investment-sources/{startupId}', 'addInvestmentSources');
  
-    
+
 });
   // Route::get('/', 'index');
     // Route::get('/{id}',  'readMessage');
