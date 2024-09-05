@@ -30,8 +30,8 @@ return new class extends Migration
             $table->string('phone_number')->nullable();
             $table->string('email_address')->nullable();
             $table->string('website_url')->nullable();
-            $table->enum('currently_raising_type', ['Founders', 'Family & Friends', 'Pre-seed', 'Seed', 'Pre-series A', 'Series A'])->nullable();
-            $table->decimal('currently_raising_size', 15, 2)->nullable();
+            $table->enum('currently_raising_type', ['Founders', 'Family & Friends', 'Pre-seed', 'Seed', 'Pre-series A', 'Series A','Pre-series B', 'Series B', 'Series C+'])->nullable();
+            $table->bigInteger('currently_raising_size')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

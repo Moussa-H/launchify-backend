@@ -98,6 +98,50 @@ class StartupController extends Controller
     }
 
 
+    
+//     public function getstartup(Request $request)
+// {
+//     // Check if the user is authenticated
+//     if (!Auth::check()) {
+//         return response()->json([
+//             'status' => 'error',
+//             'message' => 'Unauthorized',
+//         ], 401);
+//     }
+
+//     // Get the authenticated user ID
+//     $user_id = Auth::id();
+
+//     // Validate the user_id parameter (optional, but useful for consistency)
+//     $validator = Validator::make(['user_id' => $user_id], [
+//         'user_id' => 'required|numeric|exists:users,id',
+//     ]);
+
+//     if ($validator->fails()) {
+//         return response()->json([
+//             'status' => 'error',
+//             'message' => 'Invalid user ID',
+//             'errors' => $validator->errors(),
+//         ], 400);
+//     }
+
+//     // Fetch startups associated with the user ID and load related sectors
+//     $startups = Startup::where('user_id', $user_id)->with('sectors')->get();
+
+//     if ($startups->isEmpty()) {
+//         return response()->json([
+//             'status' => 'error',
+//             'message' => 'No startups found for this user',
+//         ], 404);
+//     }
+
+//     // Return the entire startup data with related sectors
+//     return response()->json([
+//         'status' => 'success',
+//         'startups' => $startups,
+//     ], 200);
+// }
+
 public function getstartup(Request $request)
 {
     // Check if the user is authenticated
@@ -124,8 +168,10 @@ public function getstartup(Request $request)
         ], 400);
     }
 
-    // Fetch startups associated with the user ID
-    $startups = Startup::where('user_id', $user_id)->get();
+    // Fetch startups associated with the user ID, load related sectors, and investment sources
+    $startups = Startup::where('user_id', $user_id)
+        ->with(['sectors', 'investmentSources']) // Load both sectors and investment sources
+        ->get();
 
     if ($startups->isEmpty()) {
         return response()->json([
@@ -134,11 +180,13 @@ public function getstartup(Request $request)
         ], 404);
     }
 
-    // Return the entire startup data
+    // Return the startup data along with related sectors and investment sources
     return response()->json([
         'status' => 'success',
-        'startup' => $startups,
+        'startups' => $startups,
     ], 200);
 }
+
+
 
 }

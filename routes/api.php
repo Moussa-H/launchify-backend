@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SectorController;
 use App\Http\Controllers\StartupController;
 use App\Http\Controllers\StartupSectorController;
+use App\Http\Controllers\StartupInvestmentSourceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,28 +28,51 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('refresh', 'refresh');
 });
 
-// Startup sectors routes
-Route::prefix('startups/{startupId}/sectors')->group(function () {
-    Route::get('/', [StartupSectorController::class, 'getSectors']);
-    Route::post('/', [StartupSectorController::class, 'addSectors']);
-    Route::put('/', [StartupSectorController::class, 'updateSectors']);
-    Route::delete('/{sectorId}', [StartupSectorController::class, 'removeSector']);
-});
+// // Startup sectors routes
+// Route::prefix('startups/{startupId}/sectors')->group(function () {
+//     Route::get('/', [StartupSectorController::class, 'getSectors']);
+//     Route::post('/', [StartupSectorController::class, 'addSectors']);
+//     Route::put('/', [StartupSectorController::class, 'updateSectors']);
+//     Route::delete('/{sectorId}', [StartupSectorController::class, 'removeSector']);
+// });
 Route::group([
     "middleware" => "authenticated",
     "controller" => SectorController::class
 ], function () {
-    Route::get('/sectors/startup/{startupId}', 'getSectorsByStartup');
+   // Route::get('/sectors', 'getAllSectors');
+     Route::get('sectors/startup/{startupId}', 'getSectorsByStartup');
+      Route::put('sectors/startup/{startupId}', 'updateSectorsForStartup');
+     Route::post('sectors/startup/{startupId}', 'createSectorsForStartup');
+       Route::delete('sectors/startup/{startupId}', 'deleteSectorFromStartup');
+    
 });
-
 Route::group([
     "middleware" => "authenticated",
     "controller" => StartupController::class
 ], function () {
-    Route::get('/startups/user', 'getstartup');
+    Route::get('startup', 'getstartup');   
 });
 
 
+
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StartupSectorController::class
+], function () {
+    Route::get('sectors/{startupId}', 'getSectors');  // GET sectors for a startup
+    Route::post('sectors/{startupId}', 'addSectors'); // Add sectors to a startup
+  
+});
+
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StartupInvestmentSourceController::class
+], function () {
+    Route::get('investment-sources/{startupId}', 'getInvestmentSources');
+    Route::post('investment-sources/{startupId}', 'addInvestmentSources');
+ 
+    
+});
   // Route::get('/', 'index');
     // Route::get('/{id}',  'readMessage');
     // Route::post('/', 'store');
