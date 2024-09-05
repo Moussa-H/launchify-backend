@@ -62,6 +62,7 @@ Route::group([
     Route::get('sectors/{startupId}', 'getSectors');  // GET sectors for a startup
     Route::post('sectors/{startupId}', 'addSectors'); // Add sectors to a startup
    Route::put('sectors/{startupId}', 'updateSectors');
+     Route::delete('sectors/{startupId}/{sectorId}', 'removeSector');
 });
 
 Route::group([
