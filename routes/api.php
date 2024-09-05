@@ -72,6 +72,7 @@ Route::group([
     Route::get('investment-sources/{startupId}', 'getInvestmentSources');
     Route::post('investment-sources/{startupId}', 'addInvestmentSources');
      Route::put('investment-sources/{startupId}', 'updateInvestmentSources');
+    Route::delete('investment-sources/{startupId}/{investmentSourceId}', 'removeInvestmentSource');
  
 
 });
