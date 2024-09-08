@@ -14,16 +14,19 @@ return new class extends Migration
         Schema::create('expenses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('startup_id');
-            $table->integer('office_rent')->default(0); // Amount for office rent
-            $table->integer('marketing')->default(0); // Amount for marketing
-            $table->integer('legal_accounting')->default(0); // Amount for legal & accounting
-            $table->integer('maintenance')->default(0); // Amount for maintenance
-            $table->integer('software_licenses')->default(0); // Amount for software licenses
-            $table->integer('office_supplies')->default(0); // Amount for office supplies
-            $table->integer('miscellaneous')->default(0); // Amount for miscellaneous expenses
+            $table->integer('office_rent')->default(0);
+            $table->integer('marketing')->default(0);
+            $table->integer('legal_accounting')->default(0);
+            $table->integer('maintenance')->default(0);
+            $table->integer('software_licenses')->default(0);
+            $table->integer('office_supplies')->default(0);
+            $table->integer('miscellaneous')->default(0);
+            $table->year('year');
+            $table->tinyInteger('month');
             $table->timestamps();
 
-            // Foreign key relation with startups
+            $table->unique(['startup_id', 'year', 'month'], 'unique_expense_date');
+
             $table->foreign('startup_id')->references('id')->on('startups')->onDelete('cascade');
         });
     }
