@@ -40,4 +40,28 @@ class ExpenseController extends Controller
         return response()->json($expense, 201);
     }
 
+     // Update an existing expense
+    public function update(Request $request, $year, $month)
+    {
+        $validatedData = $request->validate([
+            'startup_id' => 'required|exists:startups,id',
+            'office_rent' => 'required|integer',
+            'marketing' => 'required|integer',
+            'legal_accounting' => 'required|integer',
+            'maintenance' => 'required|integer',
+            'software_licenses' => 'required|integer',
+            'office_supplies' => 'required|integer',
+            'miscellaneous' => 'required|integer',
+        ]);
+
+        $expense = Expense::where('year', $year)
+                            ->where('month', $month)
+                            ->where('startup_id', $validatedData['startup_id'])
+                            ->firstOrFail();
+
+        $expense->update($validatedData);
+
+        return response()->json($expense);
+    }
+
 }
