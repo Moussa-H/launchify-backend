@@ -16,38 +16,50 @@ class StartupInvestmentSourceController extends Controller
     }
 
     // Add investment sources to a startup
-    public function addInvestmentSources(Request $request, $startupId)
-    {
-        $startup = Startup::findOrFail($startupId);
-        $investmentSources = $request->input('investment_sources'); // Expecting an array of investment sources
+  public function createOrUpdateInvestmentSources(Request $request, $startupId)
+{
+    // Find the startup or fail
+    $startup = Startup::findOrFail($startupId);
 
-        foreach ($investmentSources as $source) {
-            $startup->investmentSources()->create($source);
-        }
+    // Get the investment sources from the request
+    $investmentSources = $request->input('investment_sources'); // Expecting an array of investment sources
 
-        return response()->json(['message' => 'Investment sources added successfully', 'investmentSources' => $startup->investmentSources], 201);
+    // Validate that the investment sources is an array
+    if (!is_array($investmentSources)) {
+        return response()->json(['message' => 'Invalid investment sources format'], 400);
     }
 
-    // Update investment sources for a startup (replace all existing sources with new ones)
-      public function updateInvestmentSources(Request $request, $startupId)
-    {
-        $startup = Startup::findOrFail($startupId);
-        $investmentSources = $request->input('investment_sources'); // Expecting an array of investment sources
-
+    // Begin a transaction to ensure atomicity
+    \DB::beginTransaction();
+    try {
+        // Delete all existing investment sources
         $startup->investmentSources()->delete();
 
+        // Create or update investment sources
         foreach ($investmentSources as $source) {
             $startup->investmentSources()->create($source);
         }
 
-        return response()->json(['message' => 'Investment sources updated successfully', 'investmentSources' => $startup->investmentSources], 200);
-    }
-    // Remove a specific investment source from a startup
-    public function removeInvestmentSource($startupId, $investmentSourceId)
-    {
-        $startup = Startup::findOrFail($startupId);
-        $startup->investmentSources()->where('id', $investmentSourceId)->delete();
+        // Commit the transaction
+        \DB::commit();
 
-        return response()->json(['message' => 'Investment source removed successfully'], 200);
+        return response()->json([
+            'message' => 'Investment sources created/updated successfully',
+            'investmentSources' => $startup->investmentSources
+        ], 200);
+    } catch (\Exception $e) {
+        // Rollback the transaction on error
+        \DB::rollback();
+        return response()->json(['message' => 'Error updating investment sources', 'error' => $e->getMessage()], 500);
     }
+}
+
+   public function removeInvestmentSource($startupId)
+{
+    $startup = Startup::findOrFail($startupId);
+    $startup->investmentSources()->delete();
+
+    return response()->json(['message' => 'All investment sources removed successfully'], 200);
+}
+
 }
