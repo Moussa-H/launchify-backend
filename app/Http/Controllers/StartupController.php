@@ -45,9 +45,8 @@ class StartupController extends Controller
             'phone_number' => 'nullable|string|max:20',
             'email_address' => 'nullable|string|email|max:255',
             'website_url' => 'nullable|url',
-            'currently_raising_type' => 'nullable|in:Founders,Family & Friends,Pre-seed,Seed,Pre-series A,Series A',
-            'currently_raising_size' => 'nullable|numeric',
         ]);
+        
 
         // Include the user_id from the authenticated user
         $validated['user_id'] = $user->id;
@@ -55,38 +54,101 @@ class StartupController extends Controller
         return Startup::create($validated);
     }
 
-    public function update(Request $request, $id)
-    {
-        $user = $request->attributes->get('user'); // Get the authenticated user
-        $startup = Startup::findOrFail($id);
+  public function type_size_Invest(Request $request, $id){
+$startup=Startup::findOrFail($id);
+ $validated = $request->validate([
+     'currently_raising_type' => 'nullable|in:Founders,Family & Friends,Pre-seed,Seed,Pre-series A,Series A,Pre-series B,Series B,Series C+',
+            'currently_raising_size' => 'nullable|numeric'
+ ]);
+ $startup->update($validated);
+ return response()->json([ 'message' => 'Investment info created/updated successfully', 'data' =>$validated]);
+  }
 
-        $validated = $request->validate([
-            'image' => 'nullable|string',
-            'company_name' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
-            'founder' => 'sometimes|string|max:255',
-            'industry' => 'sometimes|string|max:255',
-            'founding_year' => 'sometimes|integer',
-            'country' => 'sometimes|string|max:255',
-            'city' => 'sometimes|string|max:255',
-            'key_challenges' => 'nullable|string',
-            'goals' => 'nullable|string',
-            'business_type' => 'sometimes|in:B2B,B2C,B2B2C,B2G,C2C',
-            'company_stage' => 'sometimes|in:Idea,Pre-seed,Seed,Early Growth,Growth,Maturity',
-            'employees_count' => 'nullable|integer',
-            'phone_number' => 'nullable|string|max:20',
-            'email_address' => 'nullable|string|email|max:255',
-            'website_url' => 'nullable|url',
-            'currently_raising_type' => 'nullable|in:Founders,Family & Friends,Pre-seed,Seed,Pre-series A,Series A',
-            'currently_raising_size' => 'nullable|numeric',
-        ]);
 
-        // You can add additional logic to ensure that the user is authorized to update this resource
 
-        $startup->update($validated);
+public function deleteTypeSizeInvest($id)
+{
+    $startup = Startup::findOrFail($id);
 
-        return response()->json($startup, 200);
+    // Set the currently_raising_type and currently_raising_size to null
+    $startup->currently_raising_type = null;
+    $startup->currently_raising_size = null;
+
+    // Save the updated startup record
+    $startup->save();
+
+    return response()->json(['message' => 'Investment type and size deleted successfully']);
+}
+
+
+public function createOrUpdateStartup(Request $request, $id = null)
+{
+    // Check if the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
     }
+
+    // Get the authenticated user ID
+    $user_id = Auth::id();
+
+    // Determine if this is an update or create operation
+    if ($id) {
+        // Find the startup by ID and ensure it belongs to the authenticated user for update
+        $startup = Startup::where('id', $id)->where('user_id', $user_id)->first();
+        if (!$startup) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Startup not found or not owned by the user',
+            ], 404);
+        }
+    } else {
+        // Prepare for creating a new startup
+        $startup = new Startup();
+        $startup->user_id = $user_id;
+    }
+
+    // Validate the request data (excluding currently_raising_type and currently_raising_size)
+    $validated = $request->validate([
+        'image' => 'nullable|string',
+        'company_name' => 'required_without:id|string|max:255',
+        'description' => 'required_without:id|string',
+        'founder' => 'required_without:id|string|max:255',
+        'industry' => 'required_without:id|string|max:255',
+        'founding_year' => 'nullable|integer',
+        'country' => 'nullable|string|max:255',
+        'city' => 'nullable|string|max:255',
+        'key_challenges' => 'nullable|string',
+        'goals' => 'nullable|string',
+        'business_type' => 'nullable|in:B2B,B2C,B2B2C,B2G,C2C',
+        'company_stage' => 'nullable|in:Idea,Pre-seed,Seed,Early Growth,Growth,Maturity',
+        'employees_count' => 'nullable|integer',
+        'phone_number' => 'nullable|string|max:20',
+        'email_address' => 'nullable|string|email|max:255',
+        'website_url' => 'nullable|url',
+        // Exclude currently_raising_type and currently_raising_size
+    ]);
+
+    // Assign the validated data to the startup model
+    $startup->fill($validated);
+
+    // Save or update the startup
+    $startup->save();
+
+    // Return the appropriate response
+    $message = $id ? 'Startup updated successfully' : 'Startup created successfully';
+
+    return response()->json([
+        'status' => 'success',
+        'message' => $message,
+        'startup' => $startup,
+    ], $id ? 200 : 201);
+}
+
+
+
 
     public function destroy(Request $request, $id)
     {
@@ -97,50 +159,6 @@ class StartupController extends Controller
         return response()->json(['message' => 'Startup deleted successfully']);
     }
 
-
-    
-//     public function getstartup(Request $request)
-// {
-//     // Check if the user is authenticated
-//     if (!Auth::check()) {
-//         return response()->json([
-//             'status' => 'error',
-//             'message' => 'Unauthorized',
-//         ], 401);
-//     }
-
-//     // Get the authenticated user ID
-//     $user_id = Auth::id();
-
-//     // Validate the user_id parameter (optional, but useful for consistency)
-//     $validator = Validator::make(['user_id' => $user_id], [
-//         'user_id' => 'required|numeric|exists:users,id',
-//     ]);
-
-//     if ($validator->fails()) {
-//         return response()->json([
-//             'status' => 'error',
-//             'message' => 'Invalid user ID',
-//             'errors' => $validator->errors(),
-//         ], 400);
-//     }
-
-//     // Fetch startups associated with the user ID and load related sectors
-//     $startups = Startup::where('user_id', $user_id)->with('sectors')->get();
-
-//     if ($startups->isEmpty()) {
-//         return response()->json([
-//             'status' => 'error',
-//             'message' => 'No startups found for this user',
-//         ], 404);
-//     }
-
-//     // Return the entire startup data with related sectors
-//     return response()->json([
-//         'status' => 'success',
-//         'startups' => $startups,
-//     ], 200);
-// }
 
 public function getstartup(Request $request)
 {
