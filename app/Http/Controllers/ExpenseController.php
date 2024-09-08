@@ -64,4 +64,16 @@ class ExpenseController extends Controller
         return response()->json($expense);
     }
 
+     // Delete an expense
+    public function destroy($year, $month)
+    {
+        $expense = Expense::where('year', $year)
+                            ->where('month', $month)
+                            ->firstOrFail();
+
+        $expense->delete();
+
+        return response()->json(['message' => 'Expense deleted successfully']);
+    }
+
 }
