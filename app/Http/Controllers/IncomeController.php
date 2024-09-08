@@ -59,5 +59,15 @@ class IncomeController extends Controller
         return response()->json($income);
     }
 
-   
+    // Delete an income
+    public function destroy($year, $month)
+    {
+        $income = Income::where('year', $year)
+                         ->where('month', $month)
+                         ->firstOrFail();
+
+        $income->delete();
+
+        return response()->json(['message' => 'Income deleted successfully']);
+    }
 }
