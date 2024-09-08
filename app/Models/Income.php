@@ -10,11 +10,13 @@ class Income extends Model
     use HasFactory;
 
     protected $fillable = [
-        'startup_id', 
-        'product_sales', 
-        'service_revenue', 
-        'subscription_fees', 
-        'investment_income'
+        'startup_id',
+        'product_sales',
+        'service_revenue',
+        'subscription_fees',
+        'investment_income',
+        'year',
+        'month',
     ];
 
     public function startup()
