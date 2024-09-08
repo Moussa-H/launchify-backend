@@ -50,29 +50,34 @@ Route::group([
     "middleware" => "authenticated",
     "controller" => StartupController::class
 ], function () {
-    Route::get('startup', 'getstartup');   
+    Route::get('startup', 'getstartup'); 
+    Route::post('startup', 'createOrUpdateStartup'); 
+    Route::put('startup/{id}', 'createOrUpdateStartup'); 
+    Route::post('startup/investinfo/{id}', 'type_size_Invest'); 
+    Route::delete('startup/investinfo/{id}', 'deleteTypeSizeInvest'); 
 });
-
 
 
 Route::group([
     'middleware' => 'authenticated',
     'controller' => StartupSectorController::class
 ], function () {
-    Route::get('sectors/{startupId}', 'getSectors');  // GET sectors for a startup
-    Route::post('sectors/{startupId}', 'addSectors'); // Add sectors to a startup
+    Route::get('sectors/{startupId}', 'getSectors');  
+    Route::post('sectors/{startupId}', 'add_updateSectors'); 
    Route::put('sectors/{startupId}', 'updateSectors');
      Route::delete('sectors/{startupId}/{sectorId}', 'removeSector');
 });
+
+
 
 Route::group([
     'middleware' => 'authenticated',
     'controller' => StartupInvestmentSourceController::class
 ], function () {
     Route::get('investment-sources/{startupId}', 'getInvestmentSources');
-    Route::post('investment-sources/{startupId}', 'addInvestmentSources');
-     Route::put('investment-sources/{startupId}', 'updateInvestmentSources');
-    Route::delete('investment-sources/{startupId}/{investmentSourceId}', 'removeInvestmentSource');
+    Route::post('investment-sources/{startupId}', 'createOrUpdateInvestmentSources');
+     Route::put('investment-sources/{startupId}', 'add_updateInvestmentSources');
+    Route::delete('investment-sources/{startupId}', 'removeInvestmentSource');
  
 
 });
@@ -96,7 +101,7 @@ Route::group([
 // Sectors route (no authentication required)
 Route::get('/sectors', [SectorController::class, 'getAllSectors']);
 
-// User routes with authentication
+
 Route::middleware('auth:api')->group(function () {
     Route::get('/getRole', [UserController::class, 'getRole']);
     Route::get('/users', [UserController::class, 'index']);
@@ -105,7 +110,6 @@ Route::middleware('auth:api')->group(function () {
     });
 });
 
-// Startup sector API resource routes (with authentication)
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('startup-sectors', StartupSectorController::class);
 });
