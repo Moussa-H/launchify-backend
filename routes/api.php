@@ -9,6 +9,8 @@ use App\Http\Controllers\StartupController;
 use App\Http\Controllers\StartupSectorController;
 use App\Http\Controllers\StartupInvestmentSourceController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\IncomeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -83,13 +85,24 @@ Route::group([
     'middleware' => 'authenticated',
     'controller' => ExpenseController::class
 ], function () {
- Route::get('expenses/{startupId}', 'index');
+    Route::get('expenses/{startupId}', 'index');
     Route::post('expenses/{startupId}', 'store');
-     Route::put('expenses/{startupId}', 'update');
+    Route::put('expenses/{startupId}', 'update');
     Route::delete('expenses/{startupId}', 'destroy');
  
-
   });  
+
+
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => IncomeController::class
+], function () {
+    Route::get('incomes/{startupId}', 'index');     // Get incomes for the startup by year and month
+    Route::post('incomes/{startupId}', 'store');    // Create or update income for the startup
+    Route::put('incomes/{startupId}', 'update');    // Update income for the startup
+    Route::delete('incomes/{startupId}', 'destroy'); // Delete income for the startup
+});
+
 
  
 Route::get('/sectors', [SectorController::class, 'getAllSectors']);
