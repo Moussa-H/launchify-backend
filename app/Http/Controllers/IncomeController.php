@@ -38,7 +38,26 @@ class IncomeController extends Controller
         return response()->json($income, 201);
     }
 
-  
+    // Update an existing income
+    public function update(Request $request, $year, $month)
+    {
+        $validatedData = $request->validate([
+            'startup_id' => 'required|exists:startups,id',
+            'product_sales' => 'required|integer',
+            'service_revenue' => 'required|integer',
+            'subscription_fees' => 'required|integer',
+            'investment_income' => 'required|integer',
+        ]);
+
+        $income = Income::where('year', $year)
+                          ->where('month', $month)
+                          ->where('startup_id', $validatedData['startup_id'])
+                          ->firstOrFail();
+
+        $income->update($validatedData);
+
+        return response()->json($income);
+    }
 
    
 }
