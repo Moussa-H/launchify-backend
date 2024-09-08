@@ -10,14 +10,16 @@ class Expense extends Model
     use HasFactory;
 
     protected $fillable = [
-        'startup_id', 
-        'office_rent', 
-        'marketing', 
-        'legal_accounting', 
-        'maintenance', 
-        'software_licenses', 
-        'office_supplies', 
-        'miscellaneous'
+        'startup_id',
+        'office_rent',
+        'marketing',
+        'legal_accounting',
+        'maintenance',
+        'software_licenses',
+        'office_supplies',
+        'miscellaneous',
+        'year',
+        'month',
     ];
 
     public function startup()
