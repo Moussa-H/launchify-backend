@@ -8,6 +8,7 @@ use App\Http\Controllers\SectorController;
 use App\Http\Controllers\StartupController;
 use App\Http\Controllers\StartupSectorController;
 use App\Http\Controllers\StartupInvestmentSourceController;
+use App\Http\Controllers\ExpenseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,13 +29,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('refresh', 'refresh');
 });
 
-// // Startup sectors routes
-// Route::prefix('startups/{startupId}/sectors')->group(function () {
-//     Route::get('/', [StartupSectorController::class, 'getSectors']);
-//     Route::post('/', [StartupSectorController::class, 'addSectors']);
-//     Route::put('/', [StartupSectorController::class, 'updateSectors']);
-//     Route::delete('/{sectorId}', [StartupSectorController::class, 'removeSector']);
-// });
+
 Route::group([
     "middleware" => "authenticated",
     "controller" => SectorController::class
@@ -64,7 +59,7 @@ Route::group([
 ], function () {
     Route::get('sectors/{startupId}', 'getSectors');  
     Route::post('sectors/{startupId}', 'add_updateSectors'); 
-   Route::put('sectors/{startupId}', 'updateSectors');
+   Route::put('sectors/{startupId}', 'add_updateSectors');
      Route::delete('sectors/{startupId}/{sectorId}', 'removeSector');
 });
 
@@ -81,24 +76,22 @@ Route::group([
  
 
 });
-  // Route::get('/', 'index');
-    // Route::get('/{id}',  'readMessage');
-    // Route::post('/', 'store');
-    // Route::delete('/{id}',  'destroy');
-    // Route::put('/{id}',  'update');
-    // Route::get('startups/user', 'getByUser');
-// Test route to check authenticated user
 
-// Route::middleware('auth.token')->group(function () {
-//     Route::get('/startups', [StartupController::class, 'index']);
-//     Route::get('/startups', [StartupController::class, 'show']);
-//     Route::post('/startups', [StartupController::class, 'store']);
-//     Route::put('/startups/{id}', [StartupController::class, 'update']);
-//     Route::delete('/startups/{id}', [StartupController::class, 'destroy']);
-//      Route::get('/startups/user', [StartupController::class, 'getByUser']);
-// });
 
-// Sectors route (no authentication required)
+
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => ExpenseController::class
+], function () {
+ Route::get('expenses/{startupId}', 'index');
+    Route::post('expenses/{startupId}', 'store');
+     Route::put('expenses/{startupId}', 'update');
+    Route::delete('expenses/{startupId}', 'destroy');
+ 
+
+  });  
+
+ 
 Route::get('/sectors', [SectorController::class, 'getAllSectors']);
 
 
