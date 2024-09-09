@@ -55,5 +55,14 @@ class TeamMemberController extends Controller
         return response()->json($teamMember);
     }
 
- 
+    // Delete a team member
+    public function destroy($startupId, $teamMemberId)
+    {
+        $startup = Startup::findOrFail($startupId);
+        $teamMember = TeamMember::where('startup_id', $startupId)->findOrFail($teamMemberId);
+
+        $teamMember->delete();
+
+        return response()->json(['message' => 'Team member deleted successfully']);
+    }
 }
