@@ -11,6 +11,7 @@ use App\Http\Controllers\StartupInvestmentSourceController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\TeamMemberController;
+use App\Http\Controllers\DashboardFinanceController;
 
 
 
@@ -87,11 +88,17 @@ Route::group([
     'middleware' => 'authenticated',
     'controller' => ExpenseController::class
 ], function () {
-    Route::get('expenses/{startupId}', 'index');
-    Route::post('expenses/{startupId}', 'store');
-    Route::put('expenses/{startupId}', 'update');
-    Route::delete('expenses/{startupId}', 'destroy');
- 
+    Route::get('expenses', 'index');
+    Route::post('expenses', 'store');
+    Route::put('expenses', 'update');
+    Route::delete('expenses', 'destroy');
+  });  
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => DashboardFinanceController::class
+], function () {
+    Route::get('total-expenses-incomes','getTotalForCurrentYear');
+  
   });  
 
 
@@ -99,10 +106,10 @@ Route::group([
     'middleware' => 'authenticated',
     'controller' => IncomeController::class
 ], function () {
-    Route::get('incomes/{startupId}', 'index');     
-    Route::post('incomes/{startupId}', 'store');    
-    Route::put('incomes/{startupId}', 'update');    
-    Route::delete('incomes/{startupId}', 'destroy'); 
+    Route::get('incomes', 'index');     
+    Route::post('incomes', 'store');    
+    Route::put('incomes', 'update');    
+    Route::delete('incomes', 'destroy'); 
 });
 
 
