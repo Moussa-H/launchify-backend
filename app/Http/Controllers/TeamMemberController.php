@@ -38,7 +38,22 @@ class TeamMemberController extends Controller
         return response()->json($teamMember, 201);
     }
 
-  
+    // Update an existing team member
+    public function update(Request $request, $startupId, $teamMemberId)
+    {
+        $startup = Startup::findOrFail($startupId);
+        $teamMember = TeamMember::where('startup_id', $startupId)->findOrFail($teamMemberId);
+
+        $validatedData = $request->validate([
+            'fullname' => 'required|string|max:255',
+            'position' => 'required|string|max:255',
+            'salary' => 'required|integer',
+        ]);
+
+        $teamMember->update($validatedData);
+
+        return response()->json($teamMember);
+    }
 
  
 }
