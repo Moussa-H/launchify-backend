@@ -9,8 +9,9 @@ class TeamMember extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['startup_id', 'fullname', 'job_title', 'salary'];
+    protected $fillable = ['startup_id', 'fullname', 'position', 'salary'];
 
+    // A team member belongs to a startup
     public function startup()
     {
         return $this->belongsTo(Startup::class);
