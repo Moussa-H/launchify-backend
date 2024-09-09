@@ -10,18 +10,10 @@ use App\Http\Controllers\StartupSectorController;
 use App\Http\Controllers\StartupInvestmentSourceController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomeController;
+use App\Http\Controllers\TeamMemberController;
 
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+
 
 // Authentication routes
 Route::controller(AuthController::class)->group(function () {
@@ -79,6 +71,16 @@ Route::group([
 
 });
 
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => TeamMemberController::class
+], function () {
+    Route::get('team-members/{startupId}', 'index');
+    Route::post('team-members/{startupId}', 'store');
+    Route::put('team-members/{startupId}/{teamMemberId}', 'update');
+    Route::delete('team-members/{startupId}/{teamMemberId}', 'destroy');
+});
+
 
 
 Route::group([
@@ -97,10 +99,10 @@ Route::group([
     'middleware' => 'authenticated',
     'controller' => IncomeController::class
 ], function () {
-    Route::get('incomes/{startupId}', 'index');     // Get incomes for the startup by year and month
-    Route::post('incomes/{startupId}', 'store');    // Create or update income for the startup
-    Route::put('incomes/{startupId}', 'update');    // Update income for the startup
-    Route::delete('incomes/{startupId}', 'destroy'); // Delete income for the startup
+    Route::get('incomes/{startupId}', 'index');     
+    Route::post('incomes/{startupId}', 'store');    
+    Route::put('incomes/{startupId}', 'update');    
+    Route::delete('incomes/{startupId}', 'destroy'); 
 });
 
 
