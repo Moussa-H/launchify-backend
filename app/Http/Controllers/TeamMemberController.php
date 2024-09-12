@@ -8,14 +8,43 @@ use Illuminate\Http\Request;
 
 class TeamMemberController extends Controller
 {
-    // Get all team members for a specific startup
-    public function index($startupId)
-    {
-        $startup = Startup::findOrFail($startupId);
-        $teamMembers = $startup->teamMembers;
 
-        return response()->json($teamMembers);
+    // Get all team members for a specific startup
+public function index($startupId)
+{
+    // Attempt to find the startup or return a 404 error if not found
+    $startup = Startup::find($startupId);
+    
+    if (!$startup) {
+        // Return a 404 response with a meaningful message if startup is not found
+        return response()->json([
+            'success' => false,
+            'message' => 'Startup not found.',
+            'data' => null
+        ], 404);
     }
+    
+    // Check if the startup has any team members
+    $teamMembers = $startup->teamMembers;
+
+    if ($teamMembers->isEmpty()) {
+        // No team members, return an appropriate response
+        return response()->json([
+            'success' => true,
+            'message' => 'No team members found.',
+            'data' => null
+        ], 200);
+    }
+
+    // If team members exist, return them
+    return response()->json([
+        'success' => true,
+        'message' => 'Team members retrieved successfully.',
+        'data' => $teamMembers
+    ], 200);
+}
+
+
 
     // Store a new team member
     public function store(Request $request, $startupId)
@@ -63,6 +92,31 @@ class TeamMemberController extends Controller
 
         $teamMember->delete();
 
-        return response()->json(['message' => 'Team member deleted successfully']);
+        return response()->json(['message' => 'Success']);
+    }
+
+
+       // Get the sum of all team members' salaries for a specific startup
+    public function getTotalSalaries($startupId)
+    {
+        // Find the startup or return a 404 error if not found
+        $startup = Startup::find($startupId);
+        
+        if (!$startup) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Startup not found.',
+                'data' => null
+            ], 404);
+        }
+
+        // Get the sum of all salaries for team members in this startup
+        $totalSalaries = TeamMember::where('startup_id', $startupId)->sum('salary');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Total salaries calculated successfully.',
+            'total_salaries' => $totalSalaries
+        ], 200);
     }
 }
