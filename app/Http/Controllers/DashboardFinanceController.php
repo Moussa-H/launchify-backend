@@ -84,6 +84,70 @@ public function getTotalForCurrentYear()
 }
 
 
+public function ExpensesTable(Request $request)
+{
+    // Ensure the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    // Get the authenticated user's ID
+    $userId = Auth::id();
+
+    // Fetch the user's startup, return 404 if not found
+    $startup = Startup::where('user_id', $userId)->first();
+
+    if (!$startup) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Startup not found',
+        ], 404);
+    }
+
+    // Validate the query parameters for year and month
+    $validatedData = $request->validate([
+        'year' => 'required|integer',
+        'month' => 'required|integer|min:1|max:12',
+    ]);
+
+    // Fetch all expenses for the startup for the given year and month
+    $expenses = Expense::where('startup_id', $startup->id)
+        ->where('year', $validatedData['year'])
+        ->where('month', $validatedData['month'])
+        ->get();
+
+    // Calculate total salaries for team members updated within the given year and month
+    $totalSalaries = TeamMember::where('startup_id', $startup->id)
+        ->whereYear('updated_at', $validatedData['year'])  // Filter by year
+        ->whereMonth('updated_at', $validatedData['month']) // Filter by month
+        ->sum('salary');
+
+    // Check if expenses are found, if not return a message
+    if ($expenses->isEmpty()) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'No expenses found for the given date',
+            'data' => [
+                'expenses' => [],
+                'total_salaries' => $totalSalaries, // Include total salaries even if no expenses found
+            ],
+        ], 200);
+    }
+
+    // Return the expenses and total salaries with a proper structure
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Expenses and total salaries retrieved successfully',
+        'data' => [
+            'expenses' => $expenses,
+            'total_salaries' => $totalSalaries, // Include total salaries in the response
+        ],
+    ], 200);
+}
+
 
 
 
