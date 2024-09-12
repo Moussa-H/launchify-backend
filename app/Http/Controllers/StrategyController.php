@@ -69,4 +69,26 @@ class StrategyController extends Controller
 }
 
 
+    /**
+     * Retrieve strategies for a specific startup.
+     */
+public function getStrategies()
+    {
+        // Check if the user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch the user's startup, throw 404 if not found
+        $startup = Startup::where('user_id', $userId)->firstOrFail();
+
+        // Return the startup's strategies
+        return response()->json($startup->strategies);
+    }
 }
