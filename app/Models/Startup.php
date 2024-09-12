@@ -36,4 +36,8 @@ class Startup extends Model
     {
         return $this->hasMany(TeamMember::class);
     }
+     public function strategies()
+    {
+        return $this->hasMany(Strategy::class);
+    }
 }
