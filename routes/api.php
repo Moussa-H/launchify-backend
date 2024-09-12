@@ -12,6 +12,8 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\DashboardFinanceController;
+use App\Http\Controllers\StrategyController;
+
 
 
 
@@ -80,8 +82,8 @@ Route::group([
     Route::post('team-members/{startupId}', 'store');
     Route::put('team-members/{startupId}/{teamMemberId}', 'update');
     Route::delete('team-members/{startupId}/{teamMemberId}', 'destroy');
+    Route::get('team-members/total-salaries/{startupId}', 'getTotalSalaries');
 });
-
 
 
 Route::group([
@@ -99,6 +101,7 @@ Route::group([
 ], function () {
     Route::get('total-expenses-incomes','getTotalForCurrentYear');
     Route::get('monthly-breakdown','getMonthlyBreakdown');
+    Route::get('totalexpenses','ExpensesTable');
   });  
 
 
@@ -111,6 +114,19 @@ Route::group([
     Route::put('incomes', 'update');    
     Route::delete('incomes', 'destroy'); 
 });
+
+
+
+
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StrategyController::class
+], function () {
+    Route::get('startups/strategies', 'getStrategies');     
+    Route::post('startups/strategies', 'generateStrategies');    
+   
+});
+
 
 
  

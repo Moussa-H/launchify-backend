@@ -16,29 +16,57 @@ class StartupSectorController extends Controller
         return response()->json($startup->sectors);
     }
 
-    // Add sectors to a startup
-    public function addSectors(Request $request, $startupId)
-    {
-        $startup = Startup::findOrFail($startupId);
-        $sectorIds = $request->input('sector_ids'); // Expecting an array of sector IDs
-        
-        // Attach sectors to the startup
-        $startup->sectors()->syncWithoutDetaching($sectorIds);
-
-        return response()->json(['message' => 'Sectors added successfully', 'sectors' => $startup->sectors], 201);
+   
+  public function addSectors(Request $request, $startupId)
+{
+    $startup = Startup::findOrFail($startupId);
+    
+    // Retrieve the array of sectors from the request
+    $sectors = $request->input('sectors'); // Expecting an array of sector objects
+    
+    // Check if sectors is provided and is an array
+    if (!is_array($sectors)) {
+        return response()->json(['message' => 'Invalid sectors data provided'], 400);
     }
+
+    // Loop through the sectors array and attach the sectors to the startup
+    foreach ($sectors as $sector) {
+        if (isset($sector['id'])) {
+            $startup->sectors()->attach($sector['id']); // Assuming you're attaching existing sector IDs
+        }
+    }
+
+    return response()->json(['message' => 'Sectors added successfully', 'sectors' => $startup->sectors], 201);
+}
+
 
     // Update sectors for a startup (replace all existing sectors with new ones)
-    public function updateSectors(Request $request, $startupId)
-    {
-        $startup = Startup::findOrFail($startupId);
-        $sectorIds = $request->input('sector_ids'); // Expecting an array of sector IDs
-
-        // Sync the sectors (this will detach all current sectors and attach the new ones)
-        $startup->sectors()->sync($sectorIds);
-
-        return response()->json(['message' => 'Sectors updated successfully', 'sectors' => $startup->sectors], 200);
+  public function add_updateSectors(Request $request, $startupId)
+{
+    // Find the startup by ID, throw 404 if not found
+    $startup = Startup::findOrFail($startupId);
+    
+    // Retrieve the array of sectors from the request
+    $sectors = $request->input('sectors'); // Expecting an array of sector objects
+    
+    // Check if sectors is provided and is an array
+    if (!is_array($sectors)) {
+        return response()->json(['message' => 'Invalid sectors data provided'], 400);
     }
+
+    // Extract the sector IDs from the sectors array
+    $sectorIds = array_map(function ($sector) {
+        return $sector['id'];
+    }, $sectors);
+
+    // Update the startup's sectors by syncing the provided sector IDs
+    // This will detach any sectors not in the provided list and attach new ones
+    $startup->sectors()->sync($sectorIds);
+
+    // Return a success response with the updated sectors
+    return response()->json(['message' => 'Sectors changed successfully', 'sectors' => $startup->sectors], 200);
+}
+
 
     // Remove a specific sector from a startup
     public function removeSector($startupId, $sectorId)

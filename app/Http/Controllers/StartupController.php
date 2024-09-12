@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Startup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class StartupController extends Controller
 {
@@ -110,13 +111,13 @@ public function createOrUpdateStartup(Request $request, $id = null)
         $startup->user_id = $user_id;
     }
 
-    // Validate the request data (excluding currently_raising_type and currently_raising_size)
+    // Validate the request data
     $validated = $request->validate([
-        'image' => 'nullable|string',
-        'company_name' => 'required_without:id|string|max:255',
-        'description' => 'required_without:id|string',
-        'founder' => 'required_without:id|string|max:255',
-        'industry' => 'required_without:id|string|max:255',
+        'image' => 'nullable|file', // Accept image filename as string
+        'company_name' => 'nullable|string|max:255',
+        'description' => 'nullable|string',
+        'founder' => 'nullable|string|max:255',
+        'industry' => 'nullable|string|max:255',
         'founding_year' => 'nullable|integer',
         'country' => 'nullable|string|max:255',
         'city' => 'nullable|string|max:255',
@@ -128,10 +129,27 @@ public function createOrUpdateStartup(Request $request, $id = null)
         'phone_number' => 'nullable|string|max:20',
         'email_address' => 'nullable|string|email|max:255',
         'website_url' => 'nullable|url',
-        // Exclude currently_raising_type and currently_raising_size
     ]);
 
-    // Assign the validated data to the startup model
+    // Handle image field
+    if (isset($validated['image'])) {
+        $imageName = $validated['image'];
+
+        // Optionally, validate the filename format (e.g., ensure it has a valid extension)
+        if (!preg_match('/\.(jpg|jpeg|png|gif)$/i', $imageName)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid image file type.',
+            ], 400);
+        }
+
+        // Construct the full image URL
+        $startup->image = url('/storage/uploads/' . $imageName);
+    }
+
+    // Assign the rest of the validated data to the startup model
+    // Remove 'image' from fillable to prevent overriding
+    unset($validated['image']);
     $startup->fill($validated);
 
     // Save or update the startup
@@ -146,6 +164,11 @@ public function createOrUpdateStartup(Request $request, $id = null)
         'startup' => $startup,
     ], $id ? 200 : 201);
 }
+
+
+
+
+
 
 
 
@@ -186,10 +209,19 @@ public function getstartup(Request $request)
         ], 400);
     }
 
-    // Fetch startups associated with the user ID, load related sectors, and investment sources
+    // Fetch startups associated with the user ID, load related sectors, investment sources, and image URL
     $startups = Startup::where('user_id', $user_id)
-        ->with(['sectors', 'investmentSources']) // Load both sectors and investment sources
-        ->get();
+        ->with(['sectors', 'investmentSources']) // Load both sectors and investment sources team-members/{startupId}
+        ->get()
+        ->map(function ($startup) {
+            // Generate the full URL for the image if it exists
+            if ($startup->image) {
+                $startup->image_url = asset('storage/' . $startup->image);
+            } else {
+                $startup->image_url = null;
+            }
+            return $startup;
+        });
 
     if ($startups->isEmpty()) {
         return response()->json([
@@ -198,7 +230,7 @@ public function getstartup(Request $request)
         ], 404);
     }
 
-    // Return the startup data along with related sectors and investment sources
+    // Return the startup data along with related sectors, investment sources, and image URL
     return response()->json([
         'status' => 'success',
         'startups' => $startups,
