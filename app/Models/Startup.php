@@ -40,4 +40,8 @@ class Startup extends Model
     {
         return $this->hasMany(Strategy::class);
     }
+      public function investments()
+    {
+        return $this->hasMany(Investment::class);
+    }
 }
