@@ -101,6 +101,79 @@ public function deleteTypeSizeInvest($id)
 }
 
 
+public function createOrUpdateStartup(Request $request, $id = null)
+{
+    // Check if the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    // Get the authenticated user ID
+    $user_id = Auth::id();
+
+    // Determine if this is an update or create operation
+    if ($id) {
+        // Find the startup by ID and ensure it belongs to the authenticated user for update
+        $startup = Startup::where('id', $id)->where('user_id', $user_id)->first();
+        if (!$startup) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Startup not found or not owned by the user',
+            ], 404);
+        }
+    } else {
+        // Prepare for creating a new startup
+        $startup = new Startup();
+        $startup->user_id = $user_id;
+    }
+
+    // Validate the request data
+    $validated = $request->validate([
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'company_name' => 'nullable|string|max:255',
+        'description' => 'nullable|string',
+        'founder' => 'nullable|string|max:255',
+        'industry' => 'nullable|string|max:255',
+        'founding_year' => 'nullable|integer',
+        'country' => 'nullable|string|max:255',
+        'city' => 'nullable|string|max:255',
+        'key_challenges' => 'nullable|string',
+        'goals' => 'nullable|string',
+        'business_type' => 'nullable|in:B2B,B2C,B2B2C,B2G,C2C',
+        'company_stage' => 'nullable|in:Idea,Pre-seed,Seed,Early Growth,Growth,Maturity',
+        'employees_count' => 'nullable|integer',
+        'phone_number' => 'nullable|string|max:20',
+        'email_address' => 'nullable|string|email|max:255',
+        'website_url' => 'nullable|url',
+    ]);
+
+   if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imagePath = $image->store('uploads', 'public'); // Save to storage/app/public/uploads
+            $imageUrl = url('storage/' . $imagePath); // Generate URL
+            $validated['image'] = $imageUrl;
+        }
+
+        // Assign the validated data to the mentor model
+        $startup->fill($validated);
+
+        // Save or update the mentor
+        $startup->save();
+
+    // Return the appropriate response
+    $message = $id ? 'Startup updated successfully' : 'Startup created successfully';
+
+    return response()->json([
+        'status' => 'success',
+        'message' => $message,
+        'startup' => $startup,
+    ], $id ? 200 : 201);
+}
+
+
 
 
 
