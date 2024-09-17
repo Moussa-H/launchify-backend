@@ -75,6 +75,13 @@ class RequestController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Request status updated', 'data' => $chatRequest]);
     }
 
+    // List all requests (for admin purposes)
+    public function index()
+    {
+        $requests = Request::with(['startup', 'mentor'])->get();
+
+        return response()->json(['status' => 'success', 'data' => $requests]);
+    }
 
 
 
