@@ -184,6 +184,15 @@ Route::group([
 });
 
 
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => RequestController::class
+], function () {
+    Route::post('request', 'sendRequest');
+    Route::post('requests/respond/{id}', 'respondRequest');
+    Route::get('requests', 'index');   
+    Route::post('sendResponse',"sendResponse");
+});
 //  Route::group([
 //     'middleware' => 'authenticated',
 //     'controller' => ChatController::class
