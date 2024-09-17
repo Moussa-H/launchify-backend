@@ -114,7 +114,16 @@ Route::group([
 
 });
 
-
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => TeamMemberController::class
+], function () {
+    Route::get('team-members/{startupId}', 'index');
+    Route::post('team-members/{startupId}', 'store');
+    Route::put('team-members/{startupId}/{teamMemberId}', 'update');
+    Route::delete('team-members/{startupId}/{teamMemberId}', 'destroy');
+    Route::get('team-members/total-salaries/{startupId}', 'getTotalSalaries');
+});
 
 
 
