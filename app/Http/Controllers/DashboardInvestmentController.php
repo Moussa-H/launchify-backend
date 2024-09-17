@@ -65,6 +65,65 @@ class DashboardInvestmentController extends Controller
         // Return the startups data in JSON format
         return response()->json($startups);
     }
+public function getAllStartupsInvested(Request $request)
+{
+    // Ensure user is authenticated
+    if (!Auth::check()) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    // Validate request inputs for year and month
+    $request->validate([
+        'year' => 'required|integer|digits:4',   // Year must be a 4-digit integer
+        'month' => 'required|integer|min:1|max:12',  // Month must be between 1 and 12
+    ]);
+
+    // Get authenticated user's ID
+    $userId = Auth::id();
+
+    // Fetch the investor associated with the authenticated user
+    $investor = Investor::where('user_id', $userId)->firstOrFail();
+
+    // Fetch all startups where the authenticated user has investments in the requested year and month
+    $startups = Startup::whereHas('investments', function($query) use ($investor, $request) {
+        $query->where('investor_id', $investor->id)
+              ->whereYear('created_at', $request->year)   // Filter by year
+              ->whereMonth('created_at', $request->month); // Filter by month
+    })->get();
+
+    // Prepare the result data
+    $result = $startups->flatMap(function($startup) use ($investor, $request) {
+        // Get all investments by this investor for this startup filtered by year and month
+        $investments = Investment::where('startup_id', $startup->id)
+            ->where('investor_id', $investor->id)
+            ->whereYear('created_at', $request->year)   // Filter by year
+            ->whereMonth('created_at', $request->month) // Filter by month
+            ->get(['amount', 'created_at']); // Fetch amount and date
+
+        // Calculate the total sum of investments for this startup
+        $totalInvestment = Investment::where('startup_id', $startup->id)
+            ->sum('amount');
+
+        // Calculate the needed investment
+        $neededInvestment = $startup->currently_raising_size - $totalInvestment;
+
+        // Return a new array with each investment as a separate entry
+        return $investments->map(function($investment) use ($startup, $neededInvestment) {
+            return [
+                'company_name' => $startup->company_name,
+                'needed_investment' => $neededInvestment,
+                'amount' => $investment->amount,
+                'date' => $investment->created_at->format('Y-m-d'), // Format the date
+            ];
+        });
+    });
+
+    // Return the result as a JSON response
+    return response()->json([
+        'success' => true,
+        'startups' => $result,
+    ]);
+}
 
 
 
