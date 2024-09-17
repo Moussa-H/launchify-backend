@@ -245,7 +245,33 @@ public function getstartup(Request $request)
     ], 200);
 }
 
+public function getAllStartups(Request $request)
+{
+    // Check if the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
 
+    // Fetch all startups, load related sectors and investment sources
+    $startups = Startup::with(['sectors', 'investmentSources']) // Load related sectors and investment sources
+        ->get();
+
+    if ($startups->isEmpty()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No startups found',
+        ], 404);
+    }
+
+    // Return the startup data along with related sectors and investment sources
+    return response()->json([
+        'status' => 'success',
+        'startups' => $startups,
+    ], 200);
+}
 
 
 }
