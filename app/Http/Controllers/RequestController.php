@@ -84,5 +84,49 @@ class RequestController extends Controller
     }
 
 
+    public function sendResponse(HttpRequest $request)
+{
+    // Ensure the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    $userId = Auth::id();
+
+    // Fetch the user's mentor profile
+    $mentor = Mentor::where('user_id', $userId)->firstOrFail();
+
+    // Validate the request input
+    $validatedData = $request->validate([
+        'startup_id' => 'required|exists:startups,id',
+        'status' => 'required|in:pending,accepted,rejected',
+    ]);
+
+    // Find the request associated with the mentor and startup
+    $chatRequest = Request::where('startup_id', $validatedData['startup_id'])
+                          ->where('mentor_id', $mentor->id)
+                          ->first();
+
+    // Check if the request exists
+    if (!$chatRequest) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Request not found',
+        ], 404);
+    }
+
+    // Update the request status
+    $chatRequest->status = $validatedData['status'];
+    $chatRequest->save();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Request status updated successfully',
+        'data' => $chatRequest,
+    ]);
+}
 
 }
