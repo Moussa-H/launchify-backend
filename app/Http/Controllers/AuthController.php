@@ -36,7 +36,7 @@ class AuthController extends Controller
         if (!$token) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Unauthorized',
+                'message' => 'Invalid username or password. Please try again',
             ], 401);
         }
 
@@ -64,7 +64,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation Error',
+                'message' => 'Credentials already in use. Please try again',
                 'errors' => $validator->errors()
             ], 422);
         }
