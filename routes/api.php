@@ -70,6 +70,14 @@ Route::group([
     Route::get('investments/{startup_id}', 'getStartupInvestmentSum');
    
 });
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => DashboardInvestmentController::class
+], function () {
+   Route::get('summary','getInvestorSummary');
+ Route::get('getlaststartup','getLastFiveStartups');
+  Route::get('getstartups','getAllStartupsInvested');
+});
 
 
 
