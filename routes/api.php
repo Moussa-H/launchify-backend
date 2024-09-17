@@ -90,6 +90,16 @@ Route::group([
 });
 
 
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StartupSectorController::class
+], function () {
+    Route::get('sectors/{startupId}', 'getSectors');  
+    Route::post('sectors/{startupId}', 'add_updateSectors'); 
+   Route::put('sectors/{startupId}', 'add_updateSectors');
+     Route::delete('sectors/{startupId}/{sectorId}', 'removeSector');
+});
+
 
 
 
