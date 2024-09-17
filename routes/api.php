@@ -13,7 +13,14 @@ use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\DashboardFinanceController;
 use App\Http\Controllers\StrategyController;
-
+use App\Http\Controllers\InvestorController;
+use App\Http\Controllers\InvestmentController;
+use App\Http\Controllers\DashboardInvestmentController;
+use App\Http\Controllers\MentorController;
+use App\Http\Controllers\MentorDirectoryController;
+use App\Http\Controllers\RequestController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MatchingController;
 
 
 
@@ -38,10 +45,13 @@ Route::group([
        Route::delete('sectors/startup/{startupId}', 'deleteSectorFromStartup');
     
 });
+
 Route::group([
     "middleware" => "authenticated",
     "controller" => StartupController::class
 ], function () {
+    Route::get('startups', 'getAllStartups'); 
+    Route::get('startup/{id}', 'getStartupById');
     Route::get('startup', 'getstartup'); 
     Route::post('startup', 'createOrUpdateStartup'); 
     Route::put('startup/{id}', 'createOrUpdateStartup'); 
@@ -49,86 +59,41 @@ Route::group([
     Route::delete('startup/investinfo/{id}', 'deleteTypeSizeInvest'); 
 });
 
-
-Route::group([
-    'middleware' => 'authenticated',
-    'controller' => StartupSectorController::class
-], function () {
-    Route::get('sectors/{startupId}', 'getSectors');  
-    Route::post('sectors/{startupId}', 'add_updateSectors'); 
-   Route::put('sectors/{startupId}', 'add_updateSectors');
-     Route::delete('sectors/{startupId}/{sectorId}', 'removeSector');
-});
+Route::post('investments', [InvestmentController::class, 'createInvestment']);
 
 
 
-Route::group([
-    'middleware' => 'authenticated',
-    'controller' => StartupInvestmentSourceController::class
-], function () {
-    Route::get('investment-sources/{startupId}', 'getInvestmentSources');
-    Route::post('investment-sources/{startupId}', 'createOrUpdateInvestmentSources');
-     Route::put('investment-sources/{startupId}', 'add_updateInvestmentSources');
-    Route::delete('investment-sources/{startupId}', 'removeInvestmentSource');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 
-});
-
-Route::group([
-    'middleware' => 'authenticated',
-    'controller' => TeamMemberController::class
-], function () {
-    Route::get('team-members/{startupId}', 'index');
-    Route::post('team-members/{startupId}', 'store');
-    Route::put('team-members/{startupId}/{teamMemberId}', 'update');
-    Route::delete('team-members/{startupId}/{teamMemberId}', 'destroy');
-    Route::get('team-members/total-salaries/{startupId}', 'getTotalSalaries');
-});
 
 
-Route::group([
-    'middleware' => 'authenticated',
-    'controller' => ExpenseController::class
-], function () {
-    Route::get('expenses', 'index');
-    Route::post('expenses', 'store');
-    Route::put('expenses', 'update');
-    Route::delete('expenses', 'destroy');
-  });  
-Route::group([
-    'middleware' => 'authenticated',
-    'controller' => DashboardFinanceController::class
-], function () {
-    Route::get('total-expenses-incomes','getTotalForCurrentYear');
-    Route::get('monthly-breakdown','getMonthlyBreakdown');
-    Route::get('totalexpenses','ExpensesTable');
-  });  
+//  Route::group([
+//     'middleware' => 'authenticated',
+//     'controller' => ChatController::class
+// ], function () {
+// Route::post('chat/send', 'sendMessage');
+// Route::get('chat/messages', 'getMessages');
+ 
+// });
 
-
-  Route::group([
-    'middleware' => 'authenticated',
-    'controller' => IncomeController::class
-], function () {
-    Route::get('incomes', 'index');     
-    Route::post('incomes', 'store');    
-    Route::put('incomes', 'update');    
-    Route::delete('incomes', 'destroy'); 
-});
-
-
-
-
-  Route::group([
-    'middleware' => 'authenticated',
-    'controller' => StrategyController::class
-], function () {
-    Route::get('startups/strategies', 'getStrategies');     
-    Route::post('startups/strategies', 'generateStrategies');    
-   
-});
-
-
-
+Route::post('chat/send',[ChatController::class, 'sendMessage']);
+Route::get('chat/messages',[ChatController::class,  'getMessages']);
  
 Route::get('/sectors', [SectorController::class, 'getAllSectors']);
 
@@ -144,3 +109,4 @@ Route::middleware('auth:api')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('startup-sectors', StartupSectorController::class);
 });
+Route::post('match', [MatchingController::class, 'match']);
