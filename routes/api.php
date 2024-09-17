@@ -102,7 +102,17 @@ Route::group([
 
 
 
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StartupInvestmentSourceController::class
+], function () {
+    Route::get('investment-sources/{startupId}', 'getInvestmentSources');
+    Route::post('investment-sources/{startupId}', 'createOrUpdateInvestmentSources');
+     Route::put('investment-sources/{startupId}', 'add_updateInvestmentSources');
+    Route::delete('investment-sources/{startupId}', 'removeInvestmentSource');
+ 
 
+});
 
 
 
