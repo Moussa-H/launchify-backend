@@ -126,6 +126,15 @@ Route::group([
 });
 
 
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => ExpenseController::class
+], function () {
+    Route::get('expenses', 'index');
+    Route::post('expenses', 'store');
+    Route::put('expenses', 'update');
+    Route::delete('expenses', 'destroy');
+  });  
 
 
 
