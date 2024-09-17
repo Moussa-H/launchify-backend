@@ -168,6 +168,14 @@ Route::group([
     
    
 });
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => MentorController::class
+], function () {
+    Route::get('mentor', 'getMentor');     
+    Route::post('mentor/{id?}', 'createOrUpdateMentor');    
+     Route::get('getRequests','getRequests');
+});
 
 
 
