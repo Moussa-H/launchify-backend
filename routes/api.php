@@ -176,7 +176,12 @@ Route::group([
     Route::post('mentor/{id?}', 'createOrUpdateMentor');    
      Route::get('getRequests','getRequests');
 });
-
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => MentorDirectoryController::class
+], function () {
+    Route::get('mentors', 'getAllMentors');         
+});
 
 
 //  Route::group([
