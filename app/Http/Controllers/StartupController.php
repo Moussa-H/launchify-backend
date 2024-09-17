@@ -74,7 +74,17 @@ class StartupController extends Controller
         return Startup::create($validated);
     }
 
-  
+  public function type_size_Invest(Request $request, $id){
+    $startup=Startup::findOrFail($id);
+     $validated = $request->validate([
+     'currently_raising_type' => 'nullable|in:Founders,Family & Friends,Pre-seed,Seed,Pre-series A,Series A,Pre-series B,Series B,Series C+',
+            'currently_raising_size' => 'nullable|numeric'
+     ]);
+ $startup->update($validated);
+ return response()->json([ 'message' => 'Investment info created/updated successfully', 'data' =>$validated]);
+  }
+
+
 
 
 
