@@ -46,7 +46,35 @@ class RequestController extends Controller
 }
 
 
-  
+    // Mentor responds to the request (accept or reject)
+    public function respondRequest(HttpRequest $request)
+    {
+
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $userId = Auth::id();
+
+        // Fetch the user's startup, throw 404 if not found
+        $startup = Mentor::where('user_id', $userId)->firstOrFail();
+
+        $chatRequest = Request::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'status' => 'required|in:accepted,rejected',
+        ]);
+
+        // Update the request status
+        $chatRequest->status = $validatedData['status'];
+        $chatRequest->save();
+
+        return response()->json(['status' => 'success', 'message' => 'Request status updated', 'data' => $chatRequest]);
+    }
+
 
 
 
