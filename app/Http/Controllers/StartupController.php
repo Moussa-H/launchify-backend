@@ -86,6 +86,21 @@ class StartupController extends Controller
 
 
 
+public function deleteTypeSizeInvest($id)
+{
+    $startup = Startup::findOrFail($id);
+
+    // Set the currently_raising_type and currently_raising_size to null
+    $startup->currently_raising_type = null;
+    $startup->currently_raising_size = null;
+
+    // Save the updated startup record
+    $startup->save();
+
+    return response()->json(['message' => 'Investment type and size deleted successfully']);
+}
+
+
 
 
 
