@@ -77,6 +77,37 @@ class InvestmentController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+      public function getStartupInvestmentSum(Request $request)
+    {
+        // Ensure user is authenticated
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Get authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch the investor associated with the authenticated user
+        $investor = Investor::where('user_id', $userId)->firstOrFail();
+
+        // Request validation to ensure the startup ID is provided
+        $request->validate([
+            'startup_id' => 'required|exists:startups,id',
+        ]);
+
+        // Fetch the startup by the given startup ID
+        $startup = Startup::findOrFail($request->startup_id);
+
+        // Calculate the total sum of investments for this startup
+        $totalInvestment = Investment::where('startup_id', $startup->id)
+            ->sum('amount'); // Sum the amount column
+
+        // Return the result as a JSON response
+        return response()->json([
+            'success' => true,
+            'total_investment' => $totalInvestment,
+        ]);
+    }
 
   
 
