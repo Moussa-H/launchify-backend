@@ -114,6 +114,76 @@ class MentorController extends Controller
 }
 
 
+    /**
+     * Create or update a mentor.
+     */
+    public function createOrUpdateMentor(Request $request, $id = null)
+    {
+        // Check if the user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        // Get the authenticated user ID
+        $user_id = Auth::id();
+
+        // Determine if this is an update or create operation
+        if ($id) {
+            // Find the mentor by ID
+            $mentor = Mentor::find($id);
+
+            // Check if the mentor exists and if it belongs to the authenticated user for update
+            if (!$mentor || $mentor->user_id != $user_id) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Mentor not found or not owned by the user',
+                ], 404);
+            }
+        } else {
+            // Prepare for creating a new mentor
+            $mentor = new Mentor();
+            $mentor->user_id = $user_id;
+        }
+
+        // Validate the request data
+        $validated = $request->validate([
+            'full_name' => 'required|string|max:255',
+            'industry' => 'required|string|max:255',
+            'expertise' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'phone_number' => 'nullable|string|max:20',
+            'location' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imagePath = $image->store('uploads', 'public'); // Save to storage/app/public/uploads
+            $imageUrl = url('storage/' . $imagePath); // Generate URL
+            $validated['image_url'] = $imageUrl;
+        }
+
+        // Assign the validated data to the mentor model
+        $mentor->fill($validated);
+
+        // Save or update the mentor
+        $mentor->save();
+
+        // Return the appropriate response
+        $message = $id ? 'Mentor updated successfully' : 'Mentor created successfully';
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $message,
+            'mentor' => $mentor,
+        ], $id ? 200 : 201);
+ 
+    }
+
 
 
  
