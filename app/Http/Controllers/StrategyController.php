@@ -169,6 +169,55 @@ private function parseStrategy($strategyText)
             ]
         ]);
     }
+public function updateStatuses(Request $request)
+{
+    // Check if the user is logged in
+    if (!Auth::check()) {
+        return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+    }
 
+     $userId = Auth::id();
+        $startup = Startup::where('user_id', $userId)->first();
+
+        if (!$startup) {
+            return response()->json(['status' => 'error', 'message' => 'Startup not found'], 404);
+        }
+    // Validate the request
+    $request->validate([
+        'strategy_1_status' => 'nullable|in:todo,in progress,completed',
+        'strategy_2_status' => 'nullable|in:todo,in progress,completed',
+        'strategy_3_status' => 'nullable|in:todo,in progress,completed',
+        'strategy_4_status' => 'nullable|in:todo,in progress,completed',
+        'strategy_5_status' => 'nullable|in:todo,in progress,completed',
+    ]);
+
+    // Get the startup by ID
+  
+
+    // Find the strategy record for the given startup
+    $strategy = Strategy::where('startup_id', $startup->id);
+
+    if (!$strategy) {
+        return response()->json(['status' => 'error', 'message' => 'No strategies found for this startup.'], 404);
+    }
+
+    // Prepare data to update statuses
+    $updateData = [];
+    foreach (['strategy_1', 'strategy_2', 'strategy_3', 'strategy_4', 'strategy_5'] as $strategyNumber) {
+        $statusKey = "{$strategyNumber}_status";
+        if ($request->has($statusKey)) {
+            $updateData[$statusKey] = $request->input($statusKey);
+        }
+    }
+
+    // Update the strategy with the new statuses
+    $strategy->update($updateData);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Strategy statuses updated successfully!',
+        'strategy' => $strategy
+    ], 200);
+}
 
 }
