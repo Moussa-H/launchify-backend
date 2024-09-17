@@ -80,6 +80,15 @@ Route::group([
 });
 
 
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => InvestorController::class
+], function () {
+    Route::get('investor', 'getInvestor'); 
+    Route::post('investor', 'createOrUpdateInvestor');  
+     Route::put('investor/{id}', 'createOrUpdateInvestor');  
+});
+
 
 
 
