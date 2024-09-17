@@ -122,7 +122,53 @@ private function parseStrategy($strategyText)
 
  
 
-   
+    public function getStrategy()
+    {
+        // Check if the user is logged in
+        if (!Auth::check()) {
+            return response()->json(['status' => 'error', 'message' => 'Unauthorized'], 401);
+        }
+
+        // Get the authenticated user's startup
+        $userId = Auth::id();
+        $startup = Startup::where('user_id', $userId)->first();
+
+        if (!$startup) {
+            return response()->json(['status' => 'error', 'message' => 'Startup not found'], 404);
+        }
+
+        // Retrieve the strategies for the startup
+        $strategy = Strategy::where('startup_id', $startup->id)->first();
+
+        if (!$strategy) {
+            return response()->json(['status' => 'error', 'message' => 'No strategies found for this startup.'], 404);
+        }
+
+        // Return the strategy details
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Strategy retrieved successfully!',
+            'strategy' => [
+                'startup_id' => $strategy->startup_id,
+                'strategy_1_name' => $strategy->strategy_1_name,
+                'strategy_1_description' => $strategy->strategy_1_description,
+                'strategy_1_description' => $strategy->strategy_1_description,
+                'strategy_2_name' => $strategy->strategy_2_name,
+                'strategy_2_description' => $strategy->strategy_2_description,
+                'strategy_3_name' => $strategy->strategy_3_name,
+                'strategy_3_description' => $strategy->strategy_3_description,
+                'strategy_4_name' => $strategy->strategy_4_name,
+                'strategy_4_description' => $strategy->strategy_4_description,
+                'strategy_5_name' => $strategy->strategy_5_name,
+                'strategy_5_description' => $strategy->strategy_5_description,
+                 'strategy_1_status' => $strategy->strategy_1_status,
+                 'strategy_2_status' => $strategy->strategy_2_status,
+                'strategy_3_status' => $strategy->strategy_3_status,
+                  'strategy_4_status' => $strategy->strategy_4_status,
+                 'strategy_5_status' => $strategy->strategy_5_status,
+            ]
+        ]);
+    }
 
 
 }
