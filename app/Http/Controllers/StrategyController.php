@@ -101,6 +101,23 @@ Challenges:
     return response()->json(['error' => 'Failed to generate strategies from AI'], 500);
 }
 
+private function parseStrategy($strategyText)
+{
+    // Use regex to extract title and description
+    preg_match('/Strategy Name:\s*(.+?)\nDescription:\s*(.+?)\nAction Steps:\n((?:- .*\n?)+?)\nChallenges:\n((?:- .*\n?)*)/s', $strategyText, $matches);
+
+    if (count($matches) >= 5) {
+        $description = trim($matches[2]) . "\nAction Steps:\n" . trim($matches[3]) . "\nChallenges:\n" . trim($matches[4]);
+
+        return [
+            'title' => trim($matches[1]),
+            'description' => $description,
+        ];
+    }
+
+    Log::warning('Failed to parse strategy:', ['text' => $strategyText]);
+    return null; // Return null if the format does not match
+}
 
 
  
