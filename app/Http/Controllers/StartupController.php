@@ -191,6 +191,60 @@ public function createOrUpdateStartup(Request $request, $id = null)
     }
 
 
+public function getstartup(Request $request)
+{
+    // Check if the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    // Get the authenticated user ID
+    $user_id = Auth::id();
+
+    // Validate the user_id parameter (optional, but useful for consistency)
+    $validator = Validator::make(['user_id' => $user_id], [
+        'user_id' => 'required|numeric|exists:users,id',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Invalid user ID',
+            'errors' => $validator->errors(),
+        ], 400);
+    }
+
+    // Fetch startups associated with the user ID, load related sectors, investment sources, and image URL
+    $startups = Startup::where('user_id', $user_id)
+        ->with(['sectors', 'investmentSources']) // Load both sectors and investment sources team-members/{startupId}
+        ->get()
+        ->map(function ($startup) {
+            // Generate the full URL for the image if it exists
+            if ($startup->image) {
+                $startup->image_url = asset('storage/' . $startup->image);
+            } else {
+                $startup->image_url = null;
+            }
+            return $startup;
+        });
+
+    if ($startups->isEmpty()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'No startups found for this user',
+        ], 404);
+    }
+
+    // Return the startup data along with related sectors, investment sources, and image URL
+    return response()->json([
+        'status' => 'success',
+        'startups' => $startups,
+    ], 200);
+}
+
 
 
 
