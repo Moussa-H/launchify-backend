@@ -181,4 +181,17 @@ public function createOrUpdateStartup(Request $request, $id = null)
 
 
 
+    public function destroy(Request $request, $id)
+    {
+        $user = $request->attributes->get('user'); // Get the authenticated user
+        $startup = Startup::findOrFail($id);
+        $startup->delete();
+
+        return response()->json(['message' => 'Startup deleted successfully']);
+    }
+
+
+
+
+
 }
