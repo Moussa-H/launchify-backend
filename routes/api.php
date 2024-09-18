@@ -152,7 +152,7 @@ Route::group([
     Route::get('incomes', 'index');     
     Route::post('incomes', 'store');    
     Route::put('incomes', 'update');    
-   
+    Route::delete('incomes', 'destroy'); 
 });
 
 
