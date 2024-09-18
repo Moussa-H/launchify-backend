@@ -59,6 +59,10 @@ Route::group([
     Route::delete('startup/investinfo/{id}', 'deleteTypeSizeInvest'); 
 });
 
+Route::post('investments', [InvestmentController::class, 'createInvestment']);
+
+
+
 //  Route::group([
 //     'middleware' => 'authenticated',
 //     'controller' => ChatController::class
