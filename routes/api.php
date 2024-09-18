@@ -61,6 +61,14 @@ Route::group([
 
 Route::post('investments', [InvestmentController::class, 'createInvestment']);
 
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => InvestmentController::class
+], function () {
+   Route::get('getInformationPayment','getInformationPayment');
+
+   
+});
 
 
 //  Route::group([
