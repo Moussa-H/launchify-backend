@@ -206,7 +206,7 @@ Route::group([
 // });
 
 Route::post('chat/send',[ChatController::class, 'sendMessage']);
-
+Route::get('chat/messages',[ChatController::class,  'getMessages']);
  
 
 
