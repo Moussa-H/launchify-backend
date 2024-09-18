@@ -90,7 +90,15 @@ Route::group([
 });
 
 
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StartupSectorController::class
+], function () {
+    Route::get('sectors/{startupId}', 'getSectors');  
+  
 
+  
+});
 
 
 
