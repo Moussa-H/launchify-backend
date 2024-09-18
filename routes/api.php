@@ -34,7 +34,17 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 //
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => SectorController::class
+], function () {
+   // Route::get('/sectors', 'getAllSectors');
+     Route::get('sectors/startup/{startupId}', 'getSectorsByStartup');
+      Route::put('sectors/startup/{startupId}', 'updateSectorsForStartup');
+    
 
+    
+});
  
 
 
