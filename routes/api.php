@@ -100,7 +100,17 @@ Route::group([
      Route::delete('sectors/{startupId}/{sectorId}', 'removeSector');
 });
 
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StartupInvestmentSourceController::class
+], function () {
+    Route::get('investment-sources/{startupId}', 'getInvestmentSources');
+  
+    
+ 
+ 
 
+});
 
 
 //  Route::group([
