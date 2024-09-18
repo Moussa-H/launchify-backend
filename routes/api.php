@@ -120,7 +120,7 @@ Route::group([
 ], function () {
     Route::get('team-members/{startupId}', 'index');
     Route::post('team-members/{startupId}', 'store');
-
+    Route::put('team-members/{startupId}/{teamMemberId}', 'update');
 
    
 });
