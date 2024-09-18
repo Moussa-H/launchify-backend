@@ -96,7 +96,7 @@ Route::group([
 ], function () {
     Route::get('sectors/{startupId}', 'getSectors');  
     Route::post('sectors/{startupId}', 'addSectors'); 
-
+   Route::put('sectors/{startupId}', 'createOrUpdateSectors');
   
 });
 
