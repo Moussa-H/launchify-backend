@@ -64,7 +64,44 @@ class IncomeController extends Controller
 
 
     // Store or update an income for the authenticated user's startup
-  
+    public function store(Request $request)
+    {
+        // Check if the user is authenticated
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch the startup for the authenticated user, throw 404 if not found
+        $startup = Startup::where('user_id', $userId)->firstOrFail();
+
+        // Validate the request data
+        $validatedData = $request->validate([
+            'product_sales' => 'required|integer',
+            'service_revenue' => 'required|integer',
+            'subscription_fees' => 'required|integer',
+            'investment_income' => 'required|integer',
+            'year' => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
+
+        // Add the startup ID to the validated data
+        $validatedData['startup_id'] = $startup->id;
+
+        // Create or update the income entry
+        $income = Income::updateOrCreate(
+            [
+                'startup_id' => $startup->id, 
+                'year' => $validatedData['year'], 
+                'month' => $validatedData['month']
+            ],
+            $validatedData
+        );
+
+        return response()->json($income, 201);
+    }
 
     // Update an existing income for the authenticated user's startup
    
