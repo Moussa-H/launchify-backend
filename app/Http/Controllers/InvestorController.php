@@ -14,7 +14,18 @@ class InvestorController extends Controller
         return Investor::all();
     }
 
- 
+    public function show($id)
+    {
+        $investor = Investor::find($id);
+
+        if (!$investor) {
+            return response()->json(['message' => 'Investor not found'], 404);
+        }
+
+        return response()->json($investor, 200);
+    }
+
+
 
 
 
