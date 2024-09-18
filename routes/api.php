@@ -97,7 +97,7 @@ Route::group([
     Route::get('sectors/{startupId}', 'getSectors');  
     Route::post('sectors/{startupId}', 'addSectors'); 
    Route::put('sectors/{startupId}', 'createOrUpdateSectors');
-  
+     Route::delete('sectors/{startupId}/{sectorId}', 'removeSector');
 });
 
 
