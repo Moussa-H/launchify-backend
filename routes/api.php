@@ -41,7 +41,7 @@ Route::group([
    // Route::get('/sectors', 'getAllSectors');
      Route::get('sectors/startup/{startupId}', 'getSectorsByStartup');
       Route::put('sectors/startup/{startupId}', 'updateSectorsForStartup');
-    
+     Route::post('sectors/startup/{startupId}', 'createSectorsForStartup');
 
     
 });
