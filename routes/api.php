@@ -145,7 +145,16 @@ Route::group([
   });  
 
 
- 
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => IncomeController::class
+], function () {
+    Route::get('incomes', 'index');     
+     
+      
+   
+});
+
 
 
 
