@@ -51,7 +51,7 @@ Route::group([
     "controller" => StartupController::class
 ], function () {
     Route::get('startups', 'getAllStartups'); 
-
+    Route::get('startup/{id}', 'getStartupById');
 
 
 
