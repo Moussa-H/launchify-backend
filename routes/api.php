@@ -119,7 +119,7 @@ Route::group([
     'controller' => TeamMemberController::class
 ], function () {
     Route::get('team-members/{startupId}', 'index');
-
+    Route::post('team-members/{startupId}', 'store');
 
 
    
