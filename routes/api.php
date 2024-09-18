@@ -163,7 +163,7 @@ Route::group([
     'controller' => StrategyController::class
 ], function () {
     Route::get('strategies', 'getStrategy');     
-  
+    Route::post('strategies', 'generateStrategies'); 
   
     
    
