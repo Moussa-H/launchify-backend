@@ -189,7 +189,7 @@ Route::group([
     'controller' => RequestController::class
 ], function () {
     Route::post('request', 'sendRequest');
-  
+    Route::post('requests/respond/{id}', 'respondRequest');
   
 
 });
