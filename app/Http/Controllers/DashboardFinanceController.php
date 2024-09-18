@@ -151,6 +151,93 @@ public function ExpensesTable(Request $request)
 
 
 
+public function getMonthlyBreakdown(Request $request)
+{
+    // Ensure the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    // Get the authenticated user's ID
+    $userId = Auth::id();
+
+    // Fetch the user's startup, return 404 if not found
+    $startup = Startup::where('user_id', $userId)->first();
+
+    if (!$startup) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Startup not found',
+        ], 404);
+    }
+
+    // Validate the request for year parameter
+    $validatedData = $request->validate([
+        'year' => 'required|integer',
+    ]);
+
+    $year = $validatedData['year'];
+
+    // Initialize arrays to store total incomes and expenses by month
+    $monthlyData = [
+        'incomes' => [],
+        'expenses' => [],
+    ];
+
+    // Initialize variables to store the maximum income and expense
+    $maxIncome = 0;
+    $maxExpense = 0;
+
+    // Fetch total incomes by month, including total sum
+    $monthlyIncomes = Income::where('startup_id', $startup->id)
+        ->where('year', $year)
+        ->selectRaw('month, 
+            (SUM(product_sales) + SUM(service_revenue) + SUM(subscription_fees) + SUM(investment_income)) as total_income')
+        ->groupBy('month')
+        ->get();
+
+    foreach ($monthlyIncomes as $income) {
+        $monthlyData['incomes'][$income->month] = [
+            'total_income' => $income->total_income, // Total sum of all income categories
+        ];
+
+        // Update max income if current month's total_income is greater than the current max
+        if ($income->total_income > $maxIncome) {
+            $maxIncome = $income->total_income;
+        }
+    }
+
+    // Fetch total expenses by month, including total sum
+    $monthlyExpenses = Expense::where('startup_id', $startup->id)
+        ->where('year', $year)
+        ->selectRaw('month, 
+            (SUM(office_rent) + SUM(marketing) + SUM(legal_accounting) + SUM(maintenance) + SUM(software_licenses) + SUM(office_supplies) + SUM(miscellaneous)) as total_expense')
+        ->groupBy('month')
+        ->get();
+
+    foreach ($monthlyExpenses as $expense) {
+        $monthlyData['expenses'][$expense->month] = [
+            'total_expense' => $expense->total_expense, // Total sum of all expense categories
+        ];
+
+        // Update max expense if current month's total_expense is greater than the current max
+        if ($expense->total_expense > $maxExpense) {
+            $maxExpense = $expense->total_expense;
+        }
+    }
+
+    // Return the response with monthly data and the max income/expense
+    return response()->json([
+        'status' => 'success',
+        'message' => "Monthly breakdown for year $year retrieved successfully",
+        'data' => $monthlyData,
+        'max_income' => $maxIncome,   // Maximum total income
+        'max_expense' => $maxExpense, // Maximum total expense
+    ], 200);
+}
 
 
 
