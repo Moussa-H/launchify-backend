@@ -168,7 +168,16 @@ Route::group([
     
    
 });
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => MentorController::class
+], function () {
+    Route::get('mentor', 'getMentor');     
  
+    
+});
+ 
+
 
 
 
