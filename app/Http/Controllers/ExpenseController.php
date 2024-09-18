@@ -150,6 +150,38 @@ class ExpenseController extends Controller
     }
 
     // Delete an expense
-  
+    public function destroy(Request $request)
+    {
+        // Ensure the user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch the user's startup, throw 404 if not found
+        $startup = Startup::where('user_id', $userId)->firstOrFail();
+
+        // Validate the request for year and month
+        $validatedData = $request->validate([
+            'year' => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
+
+        // Fetch the existing expense or fail if not found
+        $expense = Expense::where('startup_id', $startup->id)
+            ->where('year', $validatedData['year'])
+            ->where('month', $validatedData['month'])
+            ->firstOrFail();
+
+        // Delete the expense
+        $expense->delete();
+
+        return response()->json(['message' => 'Expense deleted successfully.'], 200);
+    }
 
 }
