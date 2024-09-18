@@ -158,6 +158,18 @@ Route::group([
 
 
 
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => StrategyController::class
+], function () {
+    Route::get('strategies', 'getStrategy');     
+  
+  
+    
+   
+});
+ 
+
 
 
 //  Route::group([
