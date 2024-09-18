@@ -95,7 +95,7 @@ Route::group([
     'controller' => StartupSectorController::class
 ], function () {
     Route::get('sectors/{startupId}', 'getSectors');  
-  
+    Route::post('sectors/{startupId}', 'addSectors'); 
 
   
 });
