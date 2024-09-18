@@ -220,5 +220,5 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-  
+    Route::apiResource('startup-sectors', StartupSectorController::class);
 });
