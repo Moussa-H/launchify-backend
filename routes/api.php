@@ -55,7 +55,7 @@ Route::group([
     Route::get('startup', 'getstartup'); 
     Route::post('startup', 'createOrUpdateStartup'); 
     Route::put('startup/{id}', 'createOrUpdateStartup'); 
- 
+    Route::post('startup/investinfo/{id}', 'type_size_Invest'); 
   
 });
 
