@@ -85,7 +85,7 @@ Route::group([
     "controller" => InvestorController::class
 ], function () {
     Route::get('investor', 'getInvestor'); 
- 
+    Route::post('investor', 'createOrUpdateInvestor');  
     
 });
 
