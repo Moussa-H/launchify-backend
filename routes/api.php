@@ -164,7 +164,7 @@ Route::group([
 ], function () {
     Route::get('strategies', 'getStrategy');     
     Route::post('strategies', 'generateStrategies'); 
-  
+     Route::post('strategies/update-status','updateStatuses');    
     
    
 });
