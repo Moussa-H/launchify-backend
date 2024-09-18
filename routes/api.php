@@ -174,7 +174,7 @@ Route::group([
 ], function () {
     Route::get('mentor', 'getMentor');     
     Route::post('mentor/{id?}', 'createOrUpdateMentor');    
-    
+     Route::get('getRequests','getRequests');
 });
  
 
