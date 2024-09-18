@@ -105,7 +105,7 @@ Route::group([
     'controller' => StartupInvestmentSourceController::class
 ], function () {
     Route::get('investment-sources/{startupId}', 'getInvestmentSources');
-  
+    Route::post('investment-sources/{startupId}', 'createOrUpdateInvestmentSources');
     
  
  
