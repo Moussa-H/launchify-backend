@@ -206,9 +206,9 @@ Route::group([
 // });
 
 Route::post('chat/send',[ChatController::class, 'sendMessage']);
-Route::get('chat/messages',[ChatController::class,  'getMessages']);
+
  
-Route::get('/sectors', [SectorController::class, 'getAllSectors']);
+
 
 
 Route::middleware('auth:api')->group(function () {
@@ -220,6 +220,5 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('startup-sectors', StartupSectorController::class);
+  
 });
-Route::post('match', [MatchingController::class, 'match']);
