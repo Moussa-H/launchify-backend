@@ -141,7 +141,7 @@ Route::group([
 ], function () {
     Route::get('total-expenses-incomes','getTotalForCurrentYear');
     Route::get('monthly-breakdown','getMonthlyBreakdown');
-   
+    Route::get('totalexpenses','ExpensesTable');
   });  
 
 
