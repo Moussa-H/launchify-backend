@@ -54,7 +54,7 @@ Route::group([
     Route::get('startup/{id}', 'getStartupById');
     Route::get('startup', 'getstartup'); 
     Route::post('startup', 'createOrUpdateStartup'); 
-
+    Route::put('startup/{id}', 'createOrUpdateStartup'); 
  
   
 });
