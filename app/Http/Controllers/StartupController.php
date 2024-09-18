@@ -6,6 +6,7 @@ use App\Models\Startup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class StartupController extends Controller
 {
@@ -100,7 +101,6 @@ public function deleteTypeSizeInvest($id)
     return response()->json(['message' => 'Investment type and size deleted successfully']);
 }
 
-
 public function createOrUpdateStartup(Request $request, $id = null)
 {
     // Check if the user is authenticated
@@ -150,18 +150,20 @@ public function createOrUpdateStartup(Request $request, $id = null)
         'website_url' => 'nullable|url',
     ]);
 
-   if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imagePath = $image->store('uploads', 'public'); // Save to storage/app/public/uploads
-            $imageUrl = url('storage/' . $imagePath); // Generate URL
-            $validated['image'] = $imageUrl;
-        }
+    Log::info('Validated Data:', $validated);
 
-        // Assign the validated data to the mentor model
-        $startup->fill($validated);
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imagePath = $image->store('uploads', 'public'); // Save to storage/app/public/uploads
+        $imageUrl = url('storage/' . $imagePath); // Generate URL
+        $validated['image'] = $imageUrl;
+    }
 
-        // Save or update the mentor
-        $startup->save();
+    // Assign the validated data to the startup model
+    $startup->fill($validated);
+
+    // Save or update the startup
+    $startup->save();
 
     // Return the appropriate response
     $message = $id ? 'Startup updated successfully' : 'Startup created successfully';
@@ -172,8 +174,6 @@ public function createOrUpdateStartup(Request $request, $id = null)
         'startup' => $startup,
     ], $id ? 200 : 201);
 }
-
-
 
 
 
