@@ -208,7 +208,7 @@ Route::group([
 Route::post('chat/send',[ChatController::class, 'sendMessage']);
 Route::get('chat/messages',[ChatController::class,  'getMessages']);
  
-
+Route::get('/sectors', [SectorController::class, 'getAllSectors']);
 
 
 Route::middleware('auth:api')->group(function () {
