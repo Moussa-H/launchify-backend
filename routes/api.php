@@ -78,6 +78,23 @@ Route::group([
   Route::get('getstartups','getAllStartupsInvested');
 });
 
+
+
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => InvestorController::class
+], function () {
+    Route::get('investor', 'getInvestor'); 
+ 
+    
+});
+
+
+
+
+
+
+
 //  Route::group([
 //     'middleware' => 'authenticated',
 //     'controller' => ChatController::class
