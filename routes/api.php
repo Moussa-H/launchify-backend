@@ -135,6 +135,14 @@ Route::group([
     Route::put('expenses', 'update');
     Route::delete('expenses', 'destroy');
   });  
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => DashboardFinanceController::class
+], function () {
+    Route::get('total-expenses-incomes','getTotalForCurrentYear');
+
+   
+  });  
 
 
  
