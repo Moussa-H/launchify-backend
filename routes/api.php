@@ -113,6 +113,27 @@ Route::group([
 });
 
 
+
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => TeamMemberController::class
+], function () {
+    Route::get('team-members/{startupId}', 'index');
+
+
+
+   
+});
+
+
+
+
+ 
+
+
+
+
+
 //  Route::group([
 //     'middleware' => 'authenticated',
 //     'controller' => ChatController::class
