@@ -42,7 +42,7 @@ Route::group([
      Route::get('sectors/startup/{startupId}', 'getSectorsByStartup');
       Route::put('sectors/startup/{startupId}', 'updateSectorsForStartup');
      Route::post('sectors/startup/{startupId}', 'createSectorsForStartup');
-
+       Route::delete('sectors/startup/{startupId}', 'deleteSectorFromStartup');
     
 });
  
