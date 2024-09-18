@@ -46,7 +46,18 @@ Route::group([
     
 });
  
+Route::group([
+    "middleware" => "authenticated",
+    "controller" => StartupController::class
+], function () {
+    Route::get('startups', 'getAllStartups'); 
 
+
+
+
+ 
+  
+});
 
 //  Route::group([
 //     'middleware' => 'authenticated',
