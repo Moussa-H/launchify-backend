@@ -66,7 +66,7 @@ Route::group([
     "controller" => InvestmentController::class
 ], function () {
    Route::get('getInformationPayment','getInformationPayment');
-
+    Route::get('investments/{startup_id}', 'getStartupInvestmentSum');
    
 });
 
