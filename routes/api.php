@@ -184,6 +184,15 @@ Route::group([
 });
 
 
+  Route::group([
+    'middleware' => 'authenticated',
+    'controller' => RequestController::class
+], function () {
+    Route::post('request', 'sendRequest');
+  
+  
+
+});
 
 
 
