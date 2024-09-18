@@ -75,7 +75,7 @@ Route::group([
 ], function () {
    Route::get('summary','getInvestorSummary');
  Route::get('getlaststartup','getLastFiveStartups');
- 
+  Route::get('getstartups','getAllStartupsInvested');
 });
 
 //  Route::group([
