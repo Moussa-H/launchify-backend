@@ -52,7 +52,7 @@ Route::group([
 ], function () {
     Route::get('startups', 'getAllStartups'); 
     Route::get('startup/{id}', 'getStartupById');
-
+    Route::get('startup', 'getstartup'); 
 
 
  
