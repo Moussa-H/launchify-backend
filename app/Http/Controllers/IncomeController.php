@@ -140,5 +140,34 @@ class IncomeController extends Controller
     }
 
     // Delete an income for the authenticated user's startup
-  
+    public function destroy(Request $request)
+    {
+        // Check if the user is authenticated
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch the startup for the authenticated user, throw 404 if not found
+        $startup = Startup::where('user_id', $userId)->firstOrFail();
+
+        // Validate the year and month query parameters
+        $validatedData = $request->validate([
+            'year' => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
+
+        // Fetch the existing income or throw 404 if not found
+        $income = Income::where('startup_id', $startup->id)
+            ->where('year', $validatedData['year'])
+            ->where('month', $validatedData['month'])
+            ->firstOrFail();
+
+        // Delete the income entry
+        $income->delete();
+
+        return response()->json(['message' => 'Income deleted successfully'], 200);
+    }
 }
