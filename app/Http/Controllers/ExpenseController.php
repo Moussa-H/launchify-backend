@@ -65,7 +65,47 @@ class ExpenseController extends Controller
 
 
     // Store or update an expense
-  
+    public function store(Request $request)
+    {
+        // Ensure the user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch the user's startup, throw 404 if not found
+        $startup = Startup::where('user_id', $userId)->firstOrFail();
+
+        // Validate the request data except 'startup_id'
+        $validatedData = $request->validate([
+            'office_rent' => 'required|integer',
+            'marketing' => 'required|integer',
+            'legal_accounting' => 'required|integer',
+            'maintenance' => 'required|integer',
+            'software_licenses' => 'required|integer',
+            'office_supplies' => 'required|integer',
+            'miscellaneous' => 'required|integer',
+            'year' => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
+
+        // Check if the expense for the same month and year exists, then update or create
+        $expense = Expense::updateOrCreate(
+            [
+                'startup_id' => $startup->id,
+                'year' => $validatedData['year'],
+                'month' => $validatedData['month']
+            ],
+            $validatedData
+        );
+
+        return response()->json($expense, 201);
+    }
 
     // Update an existing expense
   
