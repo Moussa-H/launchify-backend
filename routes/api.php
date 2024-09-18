@@ -131,7 +131,7 @@ Route::group([
     'controller' => ExpenseController::class
 ], function () {
     Route::get('expenses', 'index');
-
+    Route::post('expenses', 'store');
 
   });  
 
