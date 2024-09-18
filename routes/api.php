@@ -74,7 +74,7 @@ Route::group([
     "controller" => DashboardInvestmentController::class
 ], function () {
    Route::get('summary','getInvestorSummary');
-
+ Route::get('getlaststartup','getLastFiveStartups');
  
 });
 
