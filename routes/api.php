@@ -86,7 +86,7 @@ Route::group([
 ], function () {
     Route::get('investor', 'getInvestor'); 
     Route::post('investor', 'createOrUpdateInvestor');  
-    
+     Route::put('investor/{id}', 'createOrUpdateInvestor');  
 });
 
 
