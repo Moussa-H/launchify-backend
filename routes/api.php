@@ -106,7 +106,7 @@ Route::group([
 ], function () {
     Route::get('investment-sources/{startupId}', 'getInvestmentSources');
     Route::post('investment-sources/{startupId}', 'createOrUpdateInvestmentSources');
-    
+     Route::put('investment-sources/{startupId}', 'add_updateInvestmentSources');
  
  
 
