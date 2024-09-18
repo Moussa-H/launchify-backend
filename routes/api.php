@@ -122,7 +122,7 @@ Route::group([
     Route::post('team-members/{startupId}', 'store');
     Route::put('team-members/{startupId}/{teamMemberId}', 'update');
     Route::delete('team-members/{startupId}/{teamMemberId}', 'destroy');
-   
+    Route::get('team-members/total-salaries/{startupId}', 'getTotalSalaries');
 });
 
 
