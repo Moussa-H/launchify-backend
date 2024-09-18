@@ -150,7 +150,7 @@ Route::group([
     'controller' => IncomeController::class
 ], function () {
     Route::get('incomes', 'index');     
-     
+    Route::post('incomes', 'store');    
       
    
 });
