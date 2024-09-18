@@ -132,6 +132,7 @@ Route::group([
 ], function () {
     Route::get('expenses', 'index');
     Route::post('expenses', 'store');
+    Route::put('expenses', 'update');
 
   });  
 
