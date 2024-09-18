@@ -126,6 +126,14 @@ Route::group([
 });
 
 
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => ExpenseController::class
+], function () {
+    Route::get('expenses', 'index');
+
+
+  });  
 
 
  
