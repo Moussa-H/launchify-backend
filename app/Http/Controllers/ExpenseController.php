@@ -108,7 +108,46 @@ class ExpenseController extends Controller
     }
 
     // Update an existing expense
-  
+    public function update(Request $request)
+    {
+        // Ensure the user is authenticated
+        if (!Auth::check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        // Get the authenticated user's ID
+        $userId = Auth::id();
+
+        // Fetch the user's startup, throw 404 if not found
+        $startup = Startup::where('user_id', $userId)->firstOrFail();
+
+        // Validate the request data
+        $validatedData = $request->validate([
+            'office_rent' => 'required|integer',
+            'marketing' => 'required|integer',
+            'legal_accounting' => 'required|integer',
+            'maintenance' => 'required|integer',
+            'software_licenses' => 'required|integer',
+            'office_supplies' => 'required|integer',
+            'miscellaneous' => 'required|integer',
+            'year' => 'required|integer',
+            'month' => 'required|integer|min:1|max:12',
+        ]);
+
+        // Fetch the existing expense or fail if not found
+        $expense = Expense::where('startup_id', $startup->id)
+            ->where('year', $validatedData['year'])
+            ->where('month', $validatedData['month'])
+            ->firstOrFail();
+
+        // Update the expense
+        $expense->update($validatedData);
+
+        return response()->json($expense, 200);
+    }
 
     // Delete an expense
   
