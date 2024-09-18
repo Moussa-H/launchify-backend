@@ -140,7 +140,7 @@ Route::group([
     'controller' => DashboardFinanceController::class
 ], function () {
     Route::get('total-expenses-incomes','getTotalForCurrentYear');
-
+    Route::get('monthly-breakdown','getMonthlyBreakdown');
    
   });  
 
