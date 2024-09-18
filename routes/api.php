@@ -121,7 +121,7 @@ Route::group([
     Route::get('team-members/{startupId}', 'index');
     Route::post('team-members/{startupId}', 'store');
     Route::put('team-members/{startupId}/{teamMemberId}', 'update');
-
+    Route::delete('team-members/{startupId}/{teamMemberId}', 'destroy');
    
 });
 
