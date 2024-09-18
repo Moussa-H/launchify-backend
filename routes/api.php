@@ -173,7 +173,7 @@ Route::group([
     'controller' => MentorController::class
 ], function () {
     Route::get('mentor', 'getMentor');     
- 
+    Route::post('mentor/{id?}', 'createOrUpdateMentor');    
     
 });
  
