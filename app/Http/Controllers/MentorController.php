@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 
-use App\Models\Request;
+use Illuminate\Http\Request;
 use App\Models\Mentor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -186,9 +186,10 @@ class MentorController extends Controller
 
 
 
-  public function getRequests() 
+
+public function getMentorById(Request $request, $id)
 {
-    // Ensure the user is authenticated
+    // Check if the user is authenticated
     if (!Auth::check()) {
         return response()->json([
             'status' => 'error',
@@ -196,49 +197,26 @@ class MentorController extends Controller
         ], 401);
     }
 
-    $userId = Auth::id();
+    // Fetch the mentor by ID
+    $mentor = Mentor::find($id);
 
-    // Fetch the mentor profile for the authenticated user
-    $mentor = Mentor::where('user_id', $userId)->firstOrFail();
-
-    // Get all requests where the mentor is involved
-    $requests = Request::where('mentor_id', $mentor->id)->get();
-
-    if ($requests->isEmpty()) {
+    // Check if the mentor exists
+    if (!$mentor) {
         return response()->json([
             'status' => 'error',
-            'message' => 'No startups found for this mentor',
+            'message' => 'Mentor not found',
         ], 404);
     }
 
-    // Fetch all startups related to these requests
-    $startups = Startup::whereIn('id', $requests->pluck('startup_id'))->get();
-
-    // If no startups are found, return an error
-    if ($startups->isEmpty()) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'No startups found',
-        ], 404);
-    }
-
-    // Return the startup information
-    $startupData = $startups->map(function ($startup) {
-        return [
-            'id'=>$startup->id,
-            'company_name' => $startup->company_name,
-            'description' => $startup->description,
-            'country' => $startup->country,
-            'sectors' => $startup->sectors ?? 'N/A', // Assuming sectors might be nullable
-            'industry' => $startup->industry,
-        ];
-    });
-
+    // Return the mentor's name and industry
     return response()->json([
         'status' => 'success',
-        'data' => $startupData,
-    ]);
+        'mentor' => [
+            'id' => $mentor->id,
+            'full_name' => $mentor->full_name,
+            'industry' => $mentor->industry,
+        ],
+    ], 200);
 }
-
 
 }

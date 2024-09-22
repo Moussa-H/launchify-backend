@@ -101,7 +101,7 @@ public function deleteTypeSizeInvest($id)
     return response()->json(['message' => 'Investment type and size deleted successfully']);
 }
 
-public function createOrUpdateStartup(Request $request, $id = null)
+public function createOrUpdateStartup(Request $request, $id)
 {
     // Check if the user is authenticated
     if (!Auth::check()) {

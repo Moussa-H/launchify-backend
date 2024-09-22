@@ -38,14 +38,14 @@ Challenges:
 - <challenge 1>
 - <challenge 2>"]
         ],
-        'max_tokens' => 2000,
+        'max_tokens' => 1000,
         'temperature' => 1.0,
     ];
 
     // Call OpenAI API
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer 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',
-    ])->post('https://api.openai.com/v1/chat/completions', $aiRequestData);
+  $response = Http::withHeaders([
+    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+])->post('https://api.openai.com/v1/chat/completions', $aiRequestData);
 
     // Handle AI response
     if ($response->successful()) {

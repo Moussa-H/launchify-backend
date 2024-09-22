@@ -12,8 +12,23 @@ class ChatMessage extends Model
     protected $fillable = [
         'startup_id',
         'mentor_id',
+        'sender_type',
         'message',
     ];
 
-    // Optionally, you can define relationships here
+    /**
+     * Get the startup that owns the message.
+     */
+    public function startup()
+    {
+        return $this->belongsTo(Startup::class);
+    }
+
+    /**
+     * Get the mentor that owns the message.
+     */
+    public function mentor()
+    {
+        return $this->belongsTo(Mentor::class);
+    }
 }
