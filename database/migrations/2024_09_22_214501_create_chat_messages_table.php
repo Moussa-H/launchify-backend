@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('chat_messages', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('startup_id');
-            $table->unsignedBigInteger('mentor_id');
+            $table->unsignedBigInteger('startup_id')->nullable();
+            $table->unsignedBigInteger('mentor_id')->nullable();
+            $table->string('sender_type'); // Add sender_type column
             $table->text('message');
             $table->timestamps();
 

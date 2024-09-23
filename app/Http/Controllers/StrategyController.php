@@ -44,7 +44,7 @@ Challenges:
 
     // Call OpenAI API
   $response = Http::withHeaders([
-    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+    'Authorization' => 'Bearer ' . config('app.openai_api_key') ,
 ])->post('https://api.openai.com/v1/chat/completions', $aiRequestData);
 
     // Handle AI response

@@ -59,7 +59,7 @@ class MentorController extends Controller
         ], 200);
     }
 
-    public function getAllMentors(Request $request)
+public function getAllMentors(Request $request)
 {
     // Check if the user is authenticated
     if (!Auth::check()) {
@@ -106,12 +106,15 @@ class MentorController extends Controller
         ];
     });
 
-    // Return the mentors with their status
+    // Return the mentors with their status and startup_id
     return response()->json([
         'status' => 'success',
         'mentors' => $mentorsWithStatus,
+        'test'=>'success',
+        'startup_id' => $startup->id,  // Ensure startup_id is returned here
     ], 200);
 }
+
 
 
     /**

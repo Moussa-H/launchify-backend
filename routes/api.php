@@ -25,6 +25,9 @@ use App\Http\Controllers\MatchingController;
 
 
 
+
+
+
 // Authentication routes
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
@@ -54,7 +57,7 @@ Route::group([
     Route::get('startup/{id}', 'getStartupById');
     Route::get('startup', 'getstartup'); 
     Route::post('startup', 'createOrUpdateStartup'); 
-    Route::put('startup/{id}', 'createOrUpdateStartup'); 
+    Route::post('startup/{id}', 'createOrUpdateStartup'); 
     Route::post('startup/investinfo/{id}', 'type_size_Invest'); 
     Route::delete('startup/investinfo/{id}', 'deleteTypeSizeInvest'); 
 });
@@ -173,8 +176,9 @@ Route::group([
     'controller' => MentorController::class
 ], function () {
     Route::get('mentor', 'getMentor');     
-    Route::post('mentor/{id?}', 'createOrUpdateMentor');    
-     Route::get('getRequests','getRequests');
+    Route::post('mentor/{id?}', 'createOrUpdateMentor');  
+    Route::get('mentor/{id}', 'getMentorById');  
+   
 });
   Route::group([
     'middleware' => 'authenticated',
@@ -192,7 +196,23 @@ Route::group([
     Route::post('requests/respond/{id}', 'respondRequest');
     Route::get('requests', 'index');   
     Route::post('sendResponse',"sendResponse");
+    Route::get('getRequests','getRequests');
 });
+
+// Route::get('chat/messages', [ChatController::class, 'fetchMessages']);
+// Route::post('chat/send', [ChatController::class, 'send']);
+
+Route::group([
+    'middleware' => 'authenticated',
+    'controller' => ChatController::class
+], function () {
+Route::get('chat/messages/{mentor_id}/{startup_id}',  'getMessagesByMentorAndStartup');
+Route::post('chat/message/send', 'sendMessage');
+Route::put('chat/message/{id}', 'updateMessage');
+
+Route::delete('chat/message/{id}','deleteMessage');
+});
+// Send a new chat message
 
 
 
@@ -205,8 +225,8 @@ Route::group([
  
 // });
 
-Route::post('chat/send',[ChatController::class, 'sendMessage']);
-Route::get('chat/messages',[ChatController::class,  'getMessages']);
+// Route::post('chat/send',[ChatController::class, 'sendMessage']);
+// Route::get('chat/messages',[ChatController::class,  'getMessages']);
  
 Route::get('/sectors', [SectorController::class, 'getAllSectors']);
 

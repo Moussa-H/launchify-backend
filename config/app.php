@@ -84,7 +84,7 @@ return [
     */
 
     'locale' => 'en',
-
+     'openai_api_key' => env('OPENAI_API_KEY'),
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
