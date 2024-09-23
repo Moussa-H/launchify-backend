@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Startup;
+use Illuminate\Support\Facades\DB; 
 
 class MentorController extends Controller
 {
@@ -106,12 +107,12 @@ public function getAllMentors(Request $request)
         ];
     });
 
-    // Return the mentors with their status and startup_id
+    // Return the mentors with their status and the startup_id
     return response()->json([
         'status' => 'success',
+         'test' => 'test',
         'mentors' => $mentorsWithStatus,
-        'test'=>'success',
-        'startup_id' => $startup->id,  // Ensure startup_id is returned here
+        'startup_id' => $startup->id,  // Include startup_id in the response
     ], 200);
 }
 
@@ -221,5 +222,62 @@ public function getMentorById(Request $request, $id)
         ],
     ], 200);
 }
+
+
+
+
+public function getAcceptedStartupsByMentor(Request $request)
+{
+    // Check if the user is authenticated
+    if (!Auth::check()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Unauthorized',
+        ], 401);
+    }
+
+    // Get the authenticated user ID
+    $userId = Auth::id();
+
+    // Fetch the mentor associated with the authenticated user
+    $mentor = Mentor::where('user_id', $userId)->first();
+
+    // Check if the mentor exists
+    if (!$mentor) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Mentor not found',
+        ], 404);
+    }
+
+    // Fetch accepted requests for the mentor
+    $acceptedRequests = DB::table('requests')
+        ->where('mentor_id', $mentor->id)
+        ->where('status', 'accepted')
+        ->get();
+
+    // Extract startup IDs from the accepted requests
+    $startupIds = $acceptedRequests->pluck('startup_id');
+
+    // Fetch all startups associated with the accepted requests
+    $acceptedStartups = Startup::whereIn('id', $startupIds)->get(['id','company_name', 'description', 'founder', 'industry', 'founding_year', 'country']);
+
+    if ($acceptedStartups->isEmpty()) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'No accepted startups found for this mentor',
+            'startups' => [],
+        ], 200);
+    }
+
+    // Return the accepted startups with the specified fields
+    return response()->json([
+        'status' => 'success',
+        'startups' => $acceptedStartups,
+    ], 200);
+}
+
+
+
 
 }

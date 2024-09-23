@@ -178,6 +178,7 @@ Route::group([
     Route::get('mentor', 'getMentor');     
     Route::post('mentor/{id?}', 'createOrUpdateMentor');  
     Route::get('mentor/{id}', 'getMentorById');  
+     Route::get('getstartupsaccepted','getAcceptedStartupsByMentor');
    
 });
   Route::group([
@@ -197,6 +198,7 @@ Route::group([
     Route::get('requests', 'index');   
     Route::post('sendResponse',"sendResponse");
     Route::get('getRequests','getRequests');
+   
 });
 
 // Route::get('chat/messages', [ChatController::class, 'fetchMessages']);

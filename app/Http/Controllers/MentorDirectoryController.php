@@ -67,6 +67,7 @@ class MentorDirectoryController extends Controller
     return response()->json([
         'status' => 'success',
         'mentors' => $mentorsWithStatus,
+        'startupId'=>$startup->id,
     ], 200);
 }
 

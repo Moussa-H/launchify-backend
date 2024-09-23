@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RequestController extends Controller
 {
- public function getRequests() 
+public function getRequests() 
 {
     // Ensure the user is authenticated
     if (!Auth::check()) {
@@ -25,13 +25,15 @@ class RequestController extends Controller
     // Fetch the mentor profile for the authenticated user
     $mentor = Mentor::where('user_id', $userId)->firstOrFail();
 
-    // Get all requests where the mentor is involved
-    $requests = Request::where('mentor_id', $mentor->id)->get();
+    // Get all requests where the mentor is involved and the status is 'pending'
+    $requests = Request::where('mentor_id', $mentor->id)
+                       ->where('status', 'pending') // Add condition for 'pending' status
+                       ->get();
 
     if ($requests->isEmpty()) {
         return response()->json([
             'status' => 'error',
-            'message' => 'No startups found for this mentor',
+            'message' => 'No pending requests found for this mentor',
         ], 404);
     }
 
@@ -49,7 +51,7 @@ class RequestController extends Controller
     // Return the startup information
     $startupData = $startups->map(function ($startup) {
         return [
-            'id'=>$startup->id,
+            'id' => $startup->id,
             'company_name' => $startup->company_name,
             'description' => $startup->description,
             'country' => $startup->country,
